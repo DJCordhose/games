@@ -20,6 +20,7 @@ Topics will include canvas basics, game loop, player control, physics, and game 
 4. Physics (4 min)
 5. Logic (3 min)
 6. The complete Ball Game / Summary (2 min)
+   * requestAnimationFrame
 7. Possible extensions (ad lib)
    * No direct collision of newly created red ball
    * Pause

@@ -19,7 +19,10 @@ function drawBall() {
 // Loop
 ////////////////////////////
 
+var running = true;
+
 function loop() {
+    if (running) requestAnimationFrame(loop);
     objects.forEach(function(object) {
         object.update();
     });
@@ -29,9 +32,8 @@ function loop() {
     });
 }
 
-var loopId = setInterval(loop, 10);
 function stop() {
-    clearInterval(loopId);
+    running = false;
 }
 
 var objects = [];
@@ -185,3 +187,6 @@ var logic = {
     }
 };
 addObject(logic);
+
+loop();
+
