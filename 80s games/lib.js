@@ -1,4 +1,44 @@
 ////////////////////////////
+// Sound
+////////////////////////////
+
+var audioContext;
+window.addEventListener('load', init, false);
+function init() {
+    try {
+        window.AudioContext = window.AudioContext||window.webkitAudioContext;
+        audioContext = new AudioContext();
+    }
+    catch(e) {
+        console.warn('Web Audio API is not supported in this browser');
+    }
+}
+
+function createOscillator(context, frequency) {
+    var oscillator = context.createOscillator(); // Oscillator defaults to sine wave
+    oscillator.type = oscillator.SQUARE;
+    oscillator.frequency.value = frequency; // in hertz
+
+//    Create a gain node.
+    var gainNode = context.createGain();
+    // Connect the source to the gain node.
+    oscillator.connect(gainNode);
+    // Connect the gain node to the destination.
+    gainNode.connect(context.destination);
+    // Reduce the volume.
+    gainNode.gain.value = 0.5;
+
+    return oscillator;
+}
+
+function playSound(frequency) {
+    frequency = frequency || 440;
+    var oscillator = createOscillator(audioContext, frequency);
+    oscillator.start(audioContext.currentTime); // play now
+    oscillator.stop(audioContext.currentTime + 0.1); // seconds
+}
+
+////////////////////////////
 // Canvas
 ////////////////////////////
 
@@ -67,7 +107,7 @@ window.onkeyup = function (e) {
 
 // http://www.adambrookesprojects.co.uk/project/canvas-collision-elastic-collision-tutorial/
 function ballsCollide(object1, object2) {
-    // a^2 + c^2 = c^2
+    // a^2 + b^2 = c^2
     var a = object2.position.x - object1.position.x;
     var b = object2.position.y - object1.position.y;
     var c = object1.r + object2.r;

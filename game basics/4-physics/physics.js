@@ -39,11 +39,12 @@ function updatePlayer () {
     player.velocity.y += gravity;
 }
 
+// http://www.adambrookesprojects.co.uk/project/canvas-collision-elastic-collision-tutorial/
 function ballsCollide(object1, object2) {
-    // a^2 + c^2 = c^2
-    var a = object2.position.x - object1.position.x;
-    var b = object2.position.y - object1.position.y;
-    var c = object1.r + object2.r;
-    return Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2)) < c;
+    var deltaX = object2.position.x - object1.position.x;
+    var deltaY = object2.position.y - object1.position.y;
+    // a^2 + b^2 = c^2
+    var distance = Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
+    return distance < object1.r + object2.r;
 }
 

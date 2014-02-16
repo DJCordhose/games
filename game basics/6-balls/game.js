@@ -69,7 +69,7 @@ window.onkeyup = function (e) {
 
 // http://www.adambrookesprojects.co.uk/project/canvas-collision-elastic-collision-tutorial/
 function ballsCollide(object1, object2) {
-    // a^2 + c^2 = c^2
+    // a^2 + b^2 = c^2
     var a = object2.position.x - object1.position.x;
     var b = object2.position.y - object1.position.y;
     var c = object1.r + object2.r;

@@ -1,8 +1,7 @@
-setInterval(loop, 10);
-
-var objects = [];
+var objects = [player];
 
 function loop() {
+    requestAnimationFrame(loop);
     objects.forEach(function(object) {
         object.update();
     });
@@ -12,3 +11,4 @@ function loop() {
     });
 }
 
+loop();
