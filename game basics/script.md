@@ -8,17 +8,17 @@ Topics will include canvas basics, game loop, player control, physics, and game 
 
 20-25 minutes talk
 ------------------
-0. Introduction and Explain game idea (2 min)
+0. Introduction and Explain game idea
    * Show game
    * Strategies:
      * Go slow, easily avoid red balls
      * Be fast, collect many green balls before there even are that many red ones
-1. Canvas (3 min)
-2. Loop (3 min)
-3. Control (3 min)
-4. Physics (4 min)
-5. Logic (3 min)
-6. The complete Ball Game / Summary (2 min)
+1. Canvas
+2. Loop
+3. Control
+4. Physics
+5. Logic
+6. The complete Ball Game / Wrap Up
 7. Extension: Sound
 8. Possible extensions (ad lib)
    * No direct collision of newly created red ball with extended radius check
