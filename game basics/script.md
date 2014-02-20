@@ -21,10 +21,13 @@ Topics will include canvas basics, game loop, player control, physics, and game 
 6. The complete Ball Game / Summary (2 min)
 7. Extension: Sound
 8. Possible extensions (ad lib)
-   * No direct collision of newly created red ball
+   * No direct collision of newly created red ball with extended radius check
    * Pause
    * Local high scores
-   * Variable FPS and delta times
+   * Variable FPS and delta times (either using Date.now() or performance.now() for higher
+     * http://updates.html5rocks.com/2012/08/When-milliseconds-are-not-enough-performance-now
+     * https://developer.mozilla.org/en-US/docs/Web/API/Performance.now()
+     * https://dvcs.w3.org/hg/webperf/raw-file/tip/specs/HighResolutionTime/Overview.html
    * Snake like tail (must be avoided)
    * Moving pray (green) balls
    * (Moving) Barriers (elastic collision)

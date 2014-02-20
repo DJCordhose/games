@@ -10,7 +10,6 @@ var player = {
     update: updatePlayer
 };
 
-
 function updatePlayer () {
     // move based on velocity
     this.position.x += this.velocity.x;

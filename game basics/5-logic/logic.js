@@ -42,5 +42,5 @@ var logicObject = {
         return ball;
     }
 };
-addObject(logic);
+addObject(logicObject);
 
