@@ -16,7 +16,7 @@ function init() {
 
 function createOscillator(context, frequency) {
     var oscillator = context.createOscillator(); // Oscillator defaults to sine wave
-    oscillator.type = oscillator.SAWTOOTH;
+    oscillator.type = oscillator.SQUARE;
     oscillator.frequency.value = frequency; // in hertz
 
 //    Create a gain node.
@@ -35,7 +35,7 @@ function playSound(frequency) {
     frequency = frequency || 440;
     var oscillator = createOscillator(audioContext, frequency);
     oscillator.start(audioContext.currentTime); // play now
-    oscillator.stop(audioContext.currentTime + 0.2); // seconds
+    oscillator.stop(audioContext.currentTime + 0.1); // seconds
 }
 
 ////////////////////////////
@@ -59,12 +59,22 @@ function drawBall() {
 // Loop
 ////////////////////////////
 
+function now() {
+//    return performance.now();
+    return Date.now() / 10;
+}
+
 var running = true;
+var previousNow = now();
+
 
 function loop() {
     if (running) requestAnimationFrame(loop);
+    var nextNow = now();
+    var deltaT = nextNow - previousNow;
+    previousNow = nextNow;
     objects.forEach(function(object) {
-        object.update();
+        object.update(deltaT);
     });
     context.clearRect(0, 0, canvas.width, canvas.height);
     objects.forEach(function(object) {
@@ -72,14 +82,11 @@ function loop() {
     });
 }
 
-function stop() {
-    running = false;
-}
-
 var objects = [];
 
 function addObject(object) {
-    objects.push(object);
+    // push new balls to front so game logic will draw tests in front of them
+    objects.splice(0, 0, object);
 }
 function removeObject(object) {
     objects.splice(objects.indexOf(object), 1);
@@ -93,6 +100,11 @@ var gameOver = false;
 
 var pressed = {};
 window.onkeydown = function (e) {
+    if (e.keyCode === 27 && !gameOver) {
+        running = !running;
+        loop();
+        return;
+    }
     if (e.keyCode === 40 || e.keyCode === 38 || e.keyCode === 37 || e.keyCode === 39 || e.keyCode === 32) {
         e.preventDefault();
     }
@@ -116,14 +128,14 @@ function ballsCollide(object1, object2) {
     return Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2)) < c;
 }
 
-function updatePlayer () {
-    if (38 in pressed) this.velocity.y -= acceleration; // up
-    if (40 in pressed) this.velocity.y += acceleration; // down
-    if (37 in pressed) this.velocity.x -= acceleration; // left
-    if (39 in pressed) this.velocity.x += acceleration; // right
+function updatePlayer (deltaT) {
+    if (38 in pressed) this.velocity.y -= acceleration * deltaT; // up
+    if (40 in pressed) this.velocity.y += acceleration * deltaT; // down
+    if (37 in pressed) this.velocity.x -= acceleration * deltaT; // left
+    if (39 in pressed) this.velocity.x += acceleration * deltaT; // right
 
-    this.position.x += this.velocity.x;
-    this.position.y += this.velocity.y;
+    this.position.x += this.velocity.x * deltaT;
+    this.position.y += this.velocity.y * deltaT;
 
     if (this.position.x < this.r) {
         this.position.x = this.r;
@@ -142,7 +154,7 @@ function updatePlayer () {
         this.velocity.y = -this.velocity.y;
     }
 
-    this.velocity.y += gravity;
+    this.velocity.y += gravity * deltaT;
 }
 
 ////////////////////////////
@@ -213,18 +225,27 @@ var logic = {
     update: function() {
         if (Math.random() < this.greenBallLikeliness) this.createGreenBall();
         if (Math.random() < this.redBallLikeliness) this.createRedBall();
-        if (gameOver) stop();
+        if (gameOver) running = false;
     },
     draw: function() {
+        var highScore = localStorage.getItem('balls-highscore') || 0;
         var text;
         if (gameOver) {
-            text = 'Game over, final score: ' + this.ballsCaught;
+            if (this.ballsCaught > highScore) {
+                text = 'Game over, NEW HIGHTSCORE: ' + this.ballsCaught;
+                localStorage.setItem('balls-highscore', this.ballsCaught);
+            } else {
+                text = 'Game over, final score: ' + this.ballsCaught;
+            }
         } else {
             text = "Balls caught: " + this.ballsCaught;
         }
         context.fillStyle = 'black';
         context.fillText(text, 20, canvas.height - 20);
-        context.fillText('Hit green balls and avoid red ones. Accelerate by using cursor keys. Reload page to try again', 20, 20);
+        context.fillText('Hit green balls and avoid red ones. Accelerate by using cursor keys. Hit ESC to pause. Reload page to try again. Current high score: '+ highScore, 20, 20);
+        if (!running && !gameOver) {
+            context.fillText('Paused, hit ESC to resume', 100, 100);
+        }
     }
 };
 addObject(logic);
