@@ -40,6 +40,7 @@ var logic = {
         ball.color = 'green';
         ball.update = function() {
             if (ballsCollide(ball, player)) {
+                playSound();
                 thisLogic.ballsCaught++;
                 removeObject(ball);
             }
@@ -61,18 +62,13 @@ var logic = {
     update: function() {
         if (Math.random() < this.greenBallLikeliness) this.createGreenBall();
         if (Math.random() < this.redBallLikeliness) this.createRedBall();
-        if (gameOver) stop();
+        if (gameOver) running = false;
     },
     draw: function() {
-        var text;
-        if (gameOver) {
-            text = 'Game over, final score: ' + this.ballsCaught;
-        } else {
-            text = "Balls caught: " + this.ballsCaught;
-        }
-        context.fillStyle = 'black';
-        context.fillText(text, 20, canvas.height - 20);
-        context.fillText('Hit green balls and avoid red ones. Accelerate by using cursor keys. Reload page to try again', 20, 20);
+        drawOverview('balls', 'Hit green balls and avoid red ones. Accelerate by using cursor keys.', this.ballsCaught)
     }
 };
 addObject(logic);
+
+loop();
+

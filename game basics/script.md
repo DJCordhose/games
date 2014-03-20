@@ -33,3 +33,7 @@ Topics will include canvas basics, game loop, player control, physics, and game 
    * Resize listener to expand canvas on window resize
    * Use Mobile Device Orientation to control ball
      * http://www.html5rocks.com/en/tutorials/device/orientation/
+   * Better audio
+     * http://blog.jetienne.com/blog/2014/02/27/webaudiox-jsfx/
+     * https://github.com/jeromeetienne/webaudiox
+     * https://github.com/meenie/band.js

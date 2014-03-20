@@ -26,7 +26,7 @@ function createOscillator(context, frequency) {
     // Connect the gain node to the destination.
     gainNode.connect(context.destination);
     // Reduce the volume.
-    gainNode.gain.value = 0.5;
+    gainNode.gain.value = 0.2;
 
     return oscillator;
 }
@@ -59,9 +59,21 @@ function drawBall() {
 // Loop
 ////////////////////////////
 
+function now() {
+//    return performance.now();
+    return Date.now() / 10;
+}
+
+var running = true;
+var previousNow = now();
+
 function loop() {
+    if (running) requestAnimationFrame(loop);
+    var nextNow = now();
+    var deltaT = nextNow - previousNow;
+    previousNow = nextNow;
     objects.forEach(function(object) {
-        object.update();
+        object.update(deltaT);
     });
     context.clearRect(0, 0, canvas.width, canvas.height);
     objects.forEach(function(object) {
@@ -69,15 +81,11 @@ function loop() {
     });
 }
 
-var loopId = setInterval(loop, 10);
-function stop() {
-    clearInterval(loopId);
-}
-
 var objects = [];
 
 function addObject(object) {
-    objects.push(object);
+    // push new balls to front so game logic will draw tests in front of them
+    objects.splice(0, 0, object);
 }
 function removeObject(object) {
     objects.splice(objects.indexOf(object), 1);
@@ -91,6 +99,14 @@ var gameOver = false;
 
 var pressed = {};
 window.onkeydown = function (e) {
+    if (e.keyCode === 27 && !gameOver) {
+        running = !running;
+        if (running) {
+            previousNow = now()
+            loop();
+        }
+        return;
+    }
     if (e.keyCode === 40 || e.keyCode === 38 || e.keyCode === 37 || e.keyCode === 39 || e.keyCode === 32) {
         e.preventDefault();
     }
@@ -106,22 +122,22 @@ window.onkeyup = function (e) {
 ////////////////////////////
 
 // http://www.adambrookesprojects.co.uk/project/canvas-collision-elastic-collision-tutorial/
-function ballsCollide(object1, object2) {
+function ballsCollide(ball1, ball2) {
     // a^2 + b^2 = c^2
-    var a = object2.position.x - object1.position.x;
-    var b = object2.position.y - object1.position.y;
-    var c = object1.r + object2.r;
+    var a = ball2.position.x - ball1.position.x;
+    var b = ball2.position.y - ball1.position.y;
+    var c = ball1.r + ball2.r;
     return Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2)) < c;
 }
 
-function updatePlayer () {
-    if (38 in pressed) this.velocity.y -= acceleration; // up
-    if (40 in pressed) this.velocity.y += acceleration; // down
-    if (37 in pressed) this.velocity.x -= acceleration; // left
-    if (39 in pressed) this.velocity.x += acceleration; // right
+function updatePlayer (deltaT) {
+    if (38 in pressed) this.velocity.y -= acceleration * deltaT; // up
+    if (40 in pressed) this.velocity.y += acceleration * deltaT; // down
+    if (37 in pressed) this.velocity.x -= acceleration * deltaT; // left
+    if (39 in pressed) this.velocity.x += acceleration * deltaT; // right
 
-    this.position.x += this.velocity.x;
-    this.position.y += this.velocity.y;
+    this.position.x += this.velocity.x * deltaT;
+    this.position.y += this.velocity.y * deltaT;
 
     if (this.position.x < this.r) {
         this.position.x = this.r;
@@ -140,5 +156,31 @@ function updatePlayer () {
         this.velocity.y = -this.velocity.y;
     }
 
-    this.velocity.y += gravity;
+    this.velocity.y += gravity * deltaT;
+}
+
+////////////////////////////
+// Logic
+////////////////////////////
+
+function drawOverview(gameName, description, currentScore) {
+    var highScoreKey = gameName + '-highscore';
+    var highScore = localStorage.getItem(highScoreKey) || 0;
+    var text;
+    if (gameOver) {
+        if (currentScore > highScore) {
+            text = 'Game over, NEW HIGHTSCORE: ' + currentScore;
+            localStorage.setItem(highScoreKey, currentScore);
+        } else {
+            text = 'Game over, final score: ' + currentScore;
+        }
+    } else {
+        text = "Score: " + currentScore;
+    }
+    context.fillStyle = 'black';
+    context.fillText(text, 20, canvas.height - 20);
+    context.fillText(description + ' Hit ESC to pause. Reload page to try again. Current high score: '+ highScore, 20, 20);
+    if (!running && !gameOver) {
+        context.fillText('Paused, hit ESC to resume', 100, 100);
+    }
 }
