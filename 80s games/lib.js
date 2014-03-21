@@ -31,11 +31,19 @@ function createOscillator(context, frequency) {
     return oscillator;
 }
 
-function playSound(frequency) {
+function playSoundGood(frequency) {
     frequency = frequency || 440;
     var oscillator = createOscillator(audioContext, frequency);
     oscillator.start(audioContext.currentTime); // play now
     oscillator.stop(audioContext.currentTime + 0.1); // seconds
+}
+
+function playSoundBad(frequency) {
+    frequency = frequency || 880;
+    var oscillator = createOscillator(audioContext, frequency);
+    oscillator.type = oscillator.SAWTOOTH;
+    oscillator.start(audioContext.currentTime); // play now
+    oscillator.stop(audioContext.currentTime + 0.5); // seconds
 }
 
 ////////////////////////////
@@ -93,6 +101,11 @@ function removeObject(object) {
 
 var gameOver = false;
 
+function loose() {
+    playSoundBad();
+    gameOver = true;
+}
+
 ////////////////////////////
 // Control
 ////////////////////////////
@@ -117,6 +130,57 @@ window.onkeyup = function (e) {
     delete pressed[e.keyCode];
 };
 
+window.addEventListener("orientationchange", function() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    console.log("New orientation:" + window.orientation);
+}, false);
+
+if (window.DeviceOrientationEvent) {
+//    console.log("DeviceOrientation is supported");
+    orientationSupported = true;
+}
+
+// http://www.html5rocks.com/en/tutorials/device/orientation/
+window.addEventListener('deviceorientation', function(event) {
+    orientationEvent = event;
+//    console.log(orientationEvent);
+}, false);
+
+function orientationControl(currentControl) {
+    var threshold = 45,
+        offsetBeta = 90;
+    if (orientationEvent.beta - offsetBeta > threshold) {
+        currentControl['down'] = true;
+    }
+    if (orientationEvent.beta - offsetBeta < -threshold) {
+        currentControl['up'] = true;
+    }
+    if (orientationEvent.gamma > threshold) {
+        currentControl['right'] = true;
+    }
+    if (orientationEvent.gamma < -threshold) {
+        currentControl['left'] = true;
+    }
+}
+
+function keyboardControl(currentControl) {
+    if (38 in pressed) currentControl['up'] = true;
+    if (40 in pressed) currentControl['down'] = true;
+    if (37 in pressed) currentControl['left'] = true;
+    if (39 in pressed) currentControl['right'] = true;
+}
+
+function control() {
+    var currentControl = {};
+//    if (orientationSupported && orientationEvent) {
+//        orientationControl(currentControl);
+//    }
+    keyboardControl(currentControl);
+    return currentControl;
+}
+
+
 ////////////////////////////
 // Physics
 ////////////////////////////
@@ -131,10 +195,12 @@ function ballsCollide(ball1, ball2) {
 }
 
 function updatePlayer (deltaT) {
-    if (38 in pressed) this.velocity.y -= acceleration * deltaT; // up
-    if (40 in pressed) this.velocity.y += acceleration * deltaT; // down
-    if (37 in pressed) this.velocity.x -= acceleration * deltaT; // left
-    if (39 in pressed) this.velocity.x += acceleration * deltaT; // right
+    var currentControl = control();
+
+    if ('up' in currentControl) this.velocity.y -= this.acceleration * deltaT;
+    if ('down' in currentControl) this.velocity.y += this.acceleration * deltaT;
+    if ('left' in currentControl) this.velocity.x -= this.acceleration * deltaT;
+    if ('right' in currentControl) this.velocity.x += this.acceleration * deltaT;
 
     this.position.x += this.velocity.x * deltaT;
     this.position.y += this.velocity.y * deltaT;

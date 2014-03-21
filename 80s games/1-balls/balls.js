@@ -1,4 +1,3 @@
-var acceleration = 0.1;
 var gravity = 0.01;
 
 var player = {
@@ -12,12 +11,14 @@ var player = {
         x: 100,
         y: 100
     },
+    acceleration: 0.1,
     update: updatePlayer,
     draw: drawBall
 };
 addObject(player);
 
 var logic = {
+    name: 'balls',
     ballsCaught: 0,
     greenBallLikeliness: 0.1,
     redBallLikeliness: 0.01,
@@ -40,7 +41,7 @@ var logic = {
         ball.color = 'green';
         ball.update = function() {
             if (ballsCollide(ball, player)) {
-                playSound();
+                playSoundGood();
                 thisLogic.ballsCaught++;
                 removeObject(ball);
             }
@@ -55,7 +56,7 @@ var logic = {
         ball.color = 'red';
         ball.update = function() {
             if (ballsCollide(ball, player)) {
-                gameOver = true;
+                loose();
             }
         };
     },
@@ -65,7 +66,7 @@ var logic = {
         if (gameOver) running = false;
     },
     draw: function() {
-        drawOverview('balls', 'Hit green balls and avoid red ones. Accelerate by using cursor keys.', this.ballsCaught)
+        drawOverview(this.name, 'Hit green balls and avoid red ones. Accelerate by using cursor keys.', this.ballsCaught)
     }
 };
 addObject(logic);
