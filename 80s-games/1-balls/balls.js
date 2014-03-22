@@ -13,12 +13,14 @@ var player = {
     },
     acceleration: 0.1,
     update: updatePlayer,
-    draw: drawBall
+    draw: drawBall,
+    control: control
 };
 addObject(player);
 
 var logic = {
     name: 'balls',
+    description: 'Hit green balls and avoid red ones. Accelerate by using cursor keys.',
     ballsCaught: 0,
     greenBallLikeliness: 0.1,
     redBallLikeliness: 0.01,
@@ -66,10 +68,9 @@ var logic = {
         if (gameOver) running = false;
     },
     draw: function() {
-        drawOverview(this.name, 'Hit green balls and avoid red ones. Accelerate by using cursor keys.', this.ballsCaught)
+        drawOverview(this.name, this.description, this.ballsCaught)
     }
 };
 addObject(logic);
 
 loop();
-
