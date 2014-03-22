@@ -39,7 +39,7 @@ function playSoundGood(frequency) {
 }
 
 function playSoundBad(frequency) {
-    frequency = frequency || 880;
+    frequency = frequency || 55;
     var oscillator = createOscillator(audioContext, frequency);
     oscillator.type = oscillator.SAWTOOTH;
     oscillator.start(audioContext.currentTime); // play now
