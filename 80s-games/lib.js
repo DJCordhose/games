@@ -244,6 +244,7 @@ function drawOverview(gameName, description, currentScore) {
         text = "Score: " + currentScore;
     }
     context.fillStyle = 'black';
+    context.font = '12px sans-serif';
     context.fillText(text, 20, canvas.height - 20);
     context.fillText(description + ' Hit ESC to pause. Reload page to try again. Current high score: '+ highScore, 20, 20);
     if (!running && !gameOver) {
