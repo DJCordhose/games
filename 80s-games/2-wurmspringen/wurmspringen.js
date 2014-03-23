@@ -1,12 +1,13 @@
 player.color = '#A08020';
 player.past = [];
-player.tailLength = 100;
+player.tailLength = 50;
 player.velocity.x = 1;
 player.velocity.y = 0;
 player.acceleration = 0.05;
 player.initialSpeed = 2;
 player.maxSpeed = player.initialSpeed;
 player.gravity = 0;
+player.friction = 0.0001;
 
 function checkTailCollision() {
     this.past.forEach(function (coordinate, index) {
@@ -35,48 +36,7 @@ player.update = function (deltaT) {
     this.maxSpeed = this.initialSpeed + logic.ballsCaught / 100;
 };
 
-function movesLeft() {
-    return this.velocity.x <= 0 && Math.abs(this.velocity.x) >= Math.abs(this.velocity.y);
-}
-
-function movesRight() {
-    return this.velocity.x > 0 && Math.abs(this.velocity.x) >= Math.abs(this.velocity.y);
-}
-
-function movesUp() {
-    return this.velocity.y <= 0 && Math.abs(this.velocity.x) <= Math.abs(this.velocity.y);
-}
-
-function movesDown() {
-    return this.velocity.y > 0 && Math.abs(this.velocity.x) <= Math.abs(this.velocity.y);
-}
-
-function relativeControl() {
-    return function () {
-        var originalControl = {};
-        keyboardControl(originalControl);
-        var relativeControl = {};
-
-        if (movesLeft.call(this)) {
-            if ('left' in originalControl) relativeControl['down'] = true;
-            if ('right' in originalControl) relativeControl['up'] = true;
-        } else if (movesRight.call(this)) {
-            if ('left' in originalControl) relativeControl['up'] = true;
-            if ('right' in originalControl) relativeControl['down'] = true;
-        } else if (movesUp.call(this)) {
-            if ('left' in originalControl) relativeControl['left'] = true;
-            if ('right' in originalControl) relativeControl['right'] = true;
-        } else if (movesDown.call(this)) {
-            if ('left' in originalControl) relativeControl['right'] = true;
-            if ('right' in originalControl) relativeControl['left'] = true;
-        }
-
-        return relativeControl;
-    };
-}
-
-// brutal, comment out if you want the simple control
-player.control = relativeControl();
+player.control = relativeControl;
 
 function drawTail() {
     this.past.forEach(function (coordinate) {
@@ -112,8 +72,8 @@ function drawFace() {
 
 logic.name = "wurmspringen";
 logic.description = 'Wurmspringen! Hit green balls and avoid red ones and your own tail. Control worm relative to current direction by using left and right cursor keys.'
-logic.greenBallLikeliness = 0.1;
-logic.redBallLikeliness = 0.005;
+logic.greenBallLikeliness = 0.01;
+logic.redBallLikeliness = 0.001;
 
 function addToPast() {
     this.past.push({x: this.position.x, y: this.position.y});

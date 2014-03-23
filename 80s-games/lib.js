@@ -6,10 +6,10 @@ var audioContext;
 window.addEventListener('load', init, false);
 function init() {
     try {
-        window.AudioContext = window.AudioContext||window.webkitAudioContext;
+        window.AudioContext = window.AudioContext || window.webkitAudioContext;
         audioContext = new AudioContext();
     }
-    catch(e) {
+    catch (e) {
         console.warn('Web Audio API is not supported in this browser');
     }
 }
@@ -80,12 +80,16 @@ function loop() {
     var nextNow = now();
     var deltaT = nextNow - previousNow;
     previousNow = nextNow;
-    objects.forEach(function(object) {
-        object.update(deltaT);
+    objects.forEach(function (object) {
+        if (object.update) {
+            object.update(deltaT);
+        }
     });
     context.clearRect(0, 0, canvas.width, canvas.height);
-    objects.forEach(function(object) {
-        object.draw();
+    objects.forEach(function (object) {
+        if (object.draw) {
+            object.draw();
+        }
     });
 }
 
@@ -130,7 +134,7 @@ window.onkeyup = function (e) {
     delete pressed[e.keyCode];
 };
 
-window.addEventListener("orientationchange", function() {
+window.addEventListener("orientationchange", function () {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
     console.log("New orientation:" + window.orientation);
@@ -142,7 +146,7 @@ if (window.DeviceOrientationEvent) {
 }
 
 // http://www.html5rocks.com/en/tutorials/device/orientation/
-window.addEventListener('deviceorientation', function(event) {
+window.addEventListener('deviceorientation', function (event) {
     orientationEvent = event;
 //    console.log(orientationEvent);
 }, false);
@@ -180,6 +184,26 @@ function control() {
     return currentControl;
 }
 
+function relativeControl() {
+    var originalControl = control();
+    var relativeControl = {};
+
+    if (movesLeft.call(this)) {
+        if ('left' in originalControl) relativeControl['down'] = true;
+        if ('right' in originalControl) relativeControl['up'] = true;
+    } else if (movesRight.call(this)) {
+        if ('left' in originalControl) relativeControl['up'] = true;
+        if ('right' in originalControl) relativeControl['down'] = true;
+    } else if (movesUp.call(this)) {
+        if ('left' in originalControl) relativeControl['left'] = true;
+        if ('right' in originalControl) relativeControl['right'] = true;
+    } else if (movesDown.call(this)) {
+        if ('left' in originalControl) relativeControl['right'] = true;
+        if ('right' in originalControl) relativeControl['left'] = true;
+    }
+
+    return relativeControl;
+}
 
 ////////////////////////////
 // Physics
@@ -195,9 +219,15 @@ function ballsCollide(ball1, ball2) {
 }
 
 function inertiaMove(deltaT) {
+    var gravity = this.gravity || 0;
+    var friction = this.friction || 0;
+    var maxSpeed = this.maxSpeed || Number.MAX_VALUE;
+
+    // move position based on speed
     this.position.x += this.velocity.x * deltaT;
     this.position.y += this.velocity.y * deltaT;
 
+    // bounce on edges
     if (this.position.x < this.r) {
         this.position.x = this.r;
         this.velocity.x = -this.velocity.x;
@@ -215,10 +245,26 @@ function inertiaMove(deltaT) {
         this.velocity.y = -this.velocity.y;
     }
 
-    this.velocity.y += (this.gravity || 0) * deltaT;
+    // apply friction
+    this.velocity.x = this.velocity.x + (this.velocity.x > 0 ? -1 : +1) * friction * deltaT;
+    this.velocity.y = this.velocity.y + (this.velocity.y > 0 ? -1 : +1) * friction * deltaT;
 
-    this.velocity.x = Math.min(this.velocity.x, this.maxSpeed);
-    this.velocity.y = Math.min(this.velocity.y, this.maxSpeed);
+    // gravity
+    this.velocity.y += gravity * deltaT;
+
+    // limit speed
+    if (this.velocity.x > 0 && this.velocity.x > this.maxSpeed) {
+        this.velocity.x = this.maxSpeed;
+    }
+    if (this.velocity.x < 0 && -this.velocity.x > this.maxSpeed) {
+        this.velocity.x = -this.maxSpeed;
+    }
+    if (this.velocity.y > 0 && this.velocity.y > this.maxSpeed) {
+        this.velocity.y = this.maxSpeed;
+    }
+    if (this.velocity.y < 0 && -this.velocity.y > this.maxSpeed) {
+        this.velocity.y = -this.maxSpeed;
+    }
 }
 
 function accelerate(currentControl, deltaT) {
@@ -228,11 +274,22 @@ function accelerate(currentControl, deltaT) {
     if ('right' in currentControl) this.velocity.x += this.acceleration * deltaT;
 }
 
-function updatePlayer (deltaT) {
-    var currentControl = this.control();
-    accelerate.call(this, currentControl, deltaT);
-    inertiaMove.call(this, deltaT);
+function movesLeft() {
+    return this.velocity.x <= 0 && Math.abs(this.velocity.x) >= Math.abs(this.velocity.y);
 }
+
+function movesRight() {
+    return this.velocity.x > 0 && Math.abs(this.velocity.x) >= Math.abs(this.velocity.y);
+}
+
+function movesUp() {
+    return this.velocity.y <= 0 && Math.abs(this.velocity.x) <= Math.abs(this.velocity.y);
+}
+
+function movesDown() {
+    return this.velocity.y > 0 && Math.abs(this.velocity.x) <= Math.abs(this.velocity.y);
+}
+
 
 ////////////////////////////
 // Logic
@@ -250,13 +307,22 @@ function drawOverview(gameName, description, currentScore) {
             text = 'Game over, final score: ' + currentScore;
         }
     } else {
-        text = "Score: " + currentScore;
+        text = "Score: " + (currentScore || 0);
     }
     context.fillStyle = 'black';
     context.font = '12px sans-serif';
     context.fillText(text, 20, canvas.height - 20);
-    context.fillText(description + ' Hit ESC to pause. Reload page to try again. Current high score: '+ highScore, 20, 20);
+    context.fillText(description + ' Hit ESC to pause. Reload page to try again. Current high score: ' + highScore, 20, 20);
     if (!running && !gameOver) {
         context.fillText('Paused, hit ESC to resume', 100, 100);
     }
 }
+
+var logic = {
+    name: 'undefined',
+    description: 'Game description not set',
+    draw: function () {
+        drawOverview(this.name, this.description, this.ballsCaught)
+    }
+};
+addObject(logic);
