@@ -1,3 +1,5 @@
+var gravity = 0.01;
+
 var player = {
     r: 10,
     color: 'blue',
@@ -9,7 +11,6 @@ var player = {
         x: 100,
         y: 100
     },
-    gravity: 0.01,
     acceleration: 0.1,
     update: updatePlayer,
     draw: drawBall,
@@ -19,7 +20,7 @@ addObject(player);
 
 var logic = {
     name: 'balls',
-    description: 'Hit green balls and avoid red ones. Accelerate by using cursor keys.',
+    description: 'Ricochet! Control batter using left and right cursor keys.',
     ballsCaught: 0,
     greenBallLikeliness: 0.1,
     redBallLikeliness: 0.01,

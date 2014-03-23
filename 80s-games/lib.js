@@ -194,14 +194,7 @@ function ballsCollide(ball1, ball2) {
     return Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2)) < c;
 }
 
-function updatePlayer (deltaT) {
-    var currentControl = this.control();
-
-    if ('up' in currentControl) this.velocity.y -= this.acceleration * deltaT;
-    if ('down' in currentControl) this.velocity.y += this.acceleration * deltaT;
-    if ('left' in currentControl) this.velocity.x -= this.acceleration * deltaT;
-    if ('right' in currentControl) this.velocity.x += this.acceleration * deltaT;
-
+function move(deltaT) {
     this.position.x += this.velocity.x * deltaT;
     this.position.y += this.velocity.y * deltaT;
 
@@ -222,7 +215,16 @@ function updatePlayer (deltaT) {
         this.velocity.y = -this.velocity.y;
     }
 
-    this.velocity.y += gravity * deltaT;
+    this.velocity.y += (this.gravity || 0) * deltaT;
+}
+function updatePlayer (deltaT) {
+    var currentControl = this.control();
+
+    if ('up' in currentControl) this.velocity.y -= this.acceleration * deltaT;
+    if ('down' in currentControl) this.velocity.y += this.acceleration * deltaT;
+    if ('left' in currentControl) this.velocity.x -= this.acceleration * deltaT;
+    if ('right' in currentControl) this.velocity.x += this.acceleration * deltaT;
+    move.call(this, deltaT);
 }
 
 ////////////////////////////
