@@ -1,6 +1,12 @@
 player.color = '#A08020';
 player.past = [];
 player.tailLength = 100;
+player.velocity.x = 1;
+player.velocity.y = 0;
+player.acceleration = 0.05;
+player.initialSpeed = 2;
+player.maxSpeed = player.initialSpeed;
+player.gravity = 0;
 
 function checkTailCollision() {
     this.past.forEach(function (coordinate, index) {
@@ -25,22 +31,24 @@ player.update = function (deltaT) {
     addToPast.call(this);
 
     checkTailCollision.call(this);
+
+    this.maxSpeed = this.initialSpeed + logic.ballsCaught / 100;
 };
 
 function movesLeft() {
-    return this.velocity.x < 0 && Math.abs(this.velocity.x) > Math.abs(this.velocity.y);
+    return this.velocity.x <= 0 && Math.abs(this.velocity.x) >= Math.abs(this.velocity.y);
 }
 
 function movesRight() {
-    return this.velocity.x > 0 && Math.abs(this.velocity.x) > Math.abs(this.velocity.y);
+    return this.velocity.x > 0 && Math.abs(this.velocity.x) >= Math.abs(this.velocity.y);
 }
 
 function movesUp() {
-    return this.velocity.y < 0 && Math.abs(this.velocity.x) < Math.abs(this.velocity.y);
+    return this.velocity.y <= 0 && Math.abs(this.velocity.x) <= Math.abs(this.velocity.y);
 }
 
 function movesDown() {
-    return this.velocity.y > 0 && Math.abs(this.velocity.x) < Math.abs(this.velocity.y);
+    return this.velocity.y > 0 && Math.abs(this.velocity.x) <= Math.abs(this.velocity.y);
 }
 
 function relativeControl() {
@@ -103,12 +111,14 @@ function drawFace() {
 }
 
 logic.name = "wurmspringen";
-logic.description = 'Wurmspringen! Hit green balls and avoid red ones and your own tail. Accelerate worm relative to current direction by using left and right cursor keys.'
+logic.description = 'Wurmspringen! Hit green balls and avoid red ones and your own tail. Control worm relative to current direction by using left and right cursor keys.'
+logic.greenBallLikeliness = 0.1;
+logic.redBallLikeliness = 0.005;
 
 function addToPast() {
     this.past.push({x: this.position.x, y: this.position.y});
     // let the tail grow with each ball caught
-    if (this.past.length > this.tailLength + logic.ballsCaught) {
+    if (this.past.length > this.tailLength + logic.ballsCaught / 2) {
         this.past.splice(0, 1);
     }
 }

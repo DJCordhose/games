@@ -5,6 +5,7 @@ var player = {
         x: 0,
         y: 0
     },
+    maxSpeed: 5,
     position: {
         x: 100,
         y: 100
@@ -51,7 +52,14 @@ var logic = {
     createRedBall: function () {
         var ball = this.createBall();
         // don't immediately collide with player
-        if (ballsCollide(ball, player)) {
+        var playerWithExtendedRadius = {
+            position: {
+                x: player.position.x,
+                y: player.position.y
+            },
+            r: player.r * 5
+        };
+        if (ballsCollide(ball, playerWithExtendedRadius)) {
             removeObject(ball);
         }
         ball.color = 'red';

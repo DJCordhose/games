@@ -26,7 +26,7 @@ function createOscillator(context, frequency) {
     // Connect the gain node to the destination.
     gainNode.connect(context.destination);
     // Reduce the volume.
-    gainNode.gain.value = 0.2;
+    gainNode.gain.value = 0.1;
 
     return oscillator;
 }
@@ -194,7 +194,7 @@ function ballsCollide(ball1, ball2) {
     return Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2)) < c;
 }
 
-function move(deltaT) {
+function inertiaMove(deltaT) {
     this.position.x += this.velocity.x * deltaT;
     this.position.y += this.velocity.y * deltaT;
 
@@ -216,15 +216,22 @@ function move(deltaT) {
     }
 
     this.velocity.y += (this.gravity || 0) * deltaT;
-}
-function updatePlayer (deltaT) {
-    var currentControl = this.control();
 
+    this.velocity.x = Math.min(this.velocity.x, this.maxSpeed);
+    this.velocity.y = Math.min(this.velocity.y, this.maxSpeed);
+}
+
+function accelerate(currentControl, deltaT) {
     if ('up' in currentControl) this.velocity.y -= this.acceleration * deltaT;
     if ('down' in currentControl) this.velocity.y += this.acceleration * deltaT;
     if ('left' in currentControl) this.velocity.x -= this.acceleration * deltaT;
     if ('right' in currentControl) this.velocity.x += this.acceleration * deltaT;
-    move.call(this, deltaT);
+}
+
+function updatePlayer (deltaT) {
+    var currentControl = this.control();
+    accelerate.call(this, currentControl, deltaT);
+    inertiaMove.call(this, deltaT);
 }
 
 ////////////////////////////
