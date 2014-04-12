@@ -35,7 +35,7 @@ var io = io || {};
 		frequency = frequency || 440;
 		var oscillator = createOscillator(audioContext, frequency);
 		oscillator.start(audioContext.currentTime); // play now
-		oscillator.stop(audioContext.currentTime + 0.2); // seconds
+		oscillator.stop(audioContext.currentTime + 0.1); // seconds
 	}
 
 	function playSoundBad(frequency) {
