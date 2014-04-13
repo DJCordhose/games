@@ -255,7 +255,7 @@ logic.spawnEnemy = function () {
         tintColor: 'black'
     };
     if (Math.random() < 0.1) {
-        ball.tintColor = 'red';
+        ball.tintColor = 'red'; // spammer
         ball.fireRate = 20;
         ball.pointValue = 500;
     } else if (Math.random() < 0.25) {
