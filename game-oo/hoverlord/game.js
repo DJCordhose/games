@@ -245,7 +245,7 @@ logic.spawnEnemy = function () {
         ball.tintColor = 'red'; // spammer
         ball.fireRate = 20;
         ball.pointValue = 500;
-    } else if (Math.random() < 0.1) {
+    } else if (Math.random() < 0.25) {
         ball.tintColor = 'green'; // sniper
         ball.fireRate = 150;
         ball.pointValue = 300;
@@ -335,7 +335,7 @@ function getLevel() {
 }
 
 function getMaxEnemies() {
-    var max = 5 + getLevel();
+    var max = 2 + getLevel();
     if (max > 25) {
         max = 25;
     }
@@ -346,7 +346,7 @@ function getSpawnChance() {
     if (logic.enemies.length == 0) {
         return 1.0;
     } else {
-        return ((getMaxEnemies() - logic.enemies.length) / getMaxEnemies()) * 0.0475;
+        return (getMaxEnemies() - logic.enemies.length) * 0.0035;
     }
 }
 
