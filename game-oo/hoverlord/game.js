@@ -296,4 +296,39 @@ logic.update = function (deltaT) {
     if (gameOver) running = false;
 };
 
-loop();
+// adapted from
+// http://www.html5canvastutorials.com/labs/html5-canvas-animals-on-the-beach-game-with-kineticjs/
+function loadImages(rootUrl, sources, callback) {
+    var images = {};
+    var loadedImages = 0;
+    for(var index in sources) {
+        var src = sources[index];
+        var image = new Image();
+        images[src] = image;
+        image.onload = function() {
+            // trigger callback only if all required images have been loaded
+            if(++loadedImages >= sources.length) {
+                callback(images);
+            }
+        };
+        image.src = rootUrl + '/' + src + '.png';
+    }
+}
+loadImages('images/', ['alien_spaceship','tank'], function (images) {
+
+    player.draw = function () {
+        var image = images['tank'];
+
+        var dw = 40, dh = 40,
+            dx = this.position.x - dw / 2, dy = this.position.y - dh / 2 + 5,
+            sx = 0, sy = 0,
+            sw = image.width, sh = image.height;
+
+        context.drawImage(image, sx, sy, sw, sh, dx, dy, dw, dh);
+
+            drawGunBarrel();
+    };
+
+    loop();
+})
+
