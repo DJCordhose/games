@@ -71,19 +71,14 @@ var bricks = bricks || {};
 			this.game.loose();
 		}
 		var thisMovingBall = this;
-		var bricksToRemove = [];
 		this.bricks.forEach(function (b) {
 			if (b.collidesWith(thisMovingBall)) {
 				thisMovingBall.game.removeObject(b);
-				bricksToRemove.push(b);
+				thisMovingBall.game.currentScore++;
+				thisMovingBall.bricks.splice(thisMovingBall.bricks.indexOf(b), 1);
 				io.playSoundGood();
-
 			}
 		});
-		bricksToRemove.forEach(function (b) {
-			thisMovingBall.bricks.splice(thisMovingBall.bricks.indexOf(b), 1);
-		});
-
 	};
 
 	MovingBall.prototype.applyGravity = function (deltaT) {
@@ -248,7 +243,6 @@ var bricks = bricks || {};
 			gameName: 'bricks',
 			description: 'Tear down this wall, Mr. Gorbatschow'
 		});
-
 	}
 
 	_extends(BricksGame, SimpleLogic);
