@@ -283,6 +283,7 @@ function randomShot(deltaT) {
 }
 
 function aimedShot(deltaT) {
+    // http://en.wikipedia.org/wiki/Trajectory_of_a_projectile#Angle_required_to_hit_coordinate_.28x.2Cy.29
     var power = 3.0;
     this.gun.power = power;
     //this.gun.angle = Math.random() * 180.0;

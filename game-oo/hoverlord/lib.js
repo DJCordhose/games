@@ -294,7 +294,6 @@ function shotInertiaMove(deltaT) {
                     logic.score += enemy.pointValue;
                     if (enemy.powerPack) {
                         logic.powerPacks.push(enemy.powerPack);
-                        alert(enemy.powerPack);
                     }
                 }
         }, this);
