@@ -79,11 +79,24 @@ function spawnShot(shooter, playerShot) {
         acceleration: 0.0,
         gravity: 0.035,
         friction: 0.0,
-        draw: drawBall,
+        draw: drawShot,
         update: updateShot
     };
     addObject(ball);
     return ball;
+}
+
+function drawShot() {
+    context.fillStyle = this.color;
+    context.beginPath();
+    context.lineWidth = 2;
+    context.arc(this.position.x, this.position.y, this.r, 0, Math.PI * 2);
+    if (!this.playerShot) {
+        context.fill();
+    } else {
+        context.stroke();
+    }
+    context.closePath();
 }
 
 function drawPlayer() {
@@ -192,9 +205,8 @@ addObject(player);
 logic.name = 'hoverlord';
 logic.description = 'Shoot enemies and avoid their shots.';
 logic.score = 0;
-logic.enemySpawnChance = 0.008;
+
 logic.enemies = [];
-logic.maxEnemies = 10;
 logic.spaceWasDown = false;
 logic.maxGunPower = 7.5;
 
@@ -258,8 +270,29 @@ function updateEnemy(deltaT) {
     }
 }
 
+function getLevel() {
+    var level = Math.floor(logic.score / 1000.0) + 1;
+    return level;
+}
+
+function getMaxEnemies() {
+    var max = 5 + getLevel();
+    if (max > 25) {
+        max = 25;
+    }
+    return max;
+}
+
+function getSpawnChance() {
+    if (logic.enemies.length == 0) {
+        return 1.0;
+    } else {
+        return ((getMaxEnemies() - logic.enemies.length) / getMaxEnemies()) * 0.0175;
+    }
+}
+
 logic.update = function (deltaT) {
-    if (this.enemies.length == 0 || Math.random() < this.enemySpawnChance * deltaT && this.enemies.length < this.maxEnemies) this.spawnEnemy();
+    if (this.enemies.length == 0 || Math.random() < getSpawnChance() * deltaT && this.enemies.length < getMaxEnemies()) this.spawnEnemy();
     if (gameOver) running = false;
 };
 
