@@ -287,7 +287,11 @@ function shotInertiaMove(deltaT) {
         logic.enemies.forEach(function (enemy, index) {
                 if (ballsCollide(enemy, this)) {
                     if (enemy.topHitOnly && this.velocity.y < 0) {
-                        return;
+                        enemy.bottomHits++;
+                        if (enemy.bottomHits < 5) {
+                            removeObject(this);
+                            return;
+                        }
                     }
                     removeObject(enemy);
                     logic.enemies.splice(index, 1);

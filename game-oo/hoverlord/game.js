@@ -258,7 +258,8 @@ logic.spawnEnemy = function () {
         fireRate: fireRate, // 100 = 1s
         nextShot: now() + fireRate,
         pointValue: 100,
-        tintColor: 'black'
+        tintColor: 'black',
+        bottomHits: 0
     };
     if (Math.random() < 0.1) {
         ball.tintColor = 'red'; // spammer
@@ -271,7 +272,7 @@ logic.spawnEnemy = function () {
         ball.shotSelection = aimedShot;
         ball.powerPack = 'Shield (q)';
     } else if (Math.random() > 0.9) {
-        ball.tintColor = 'blue';
+        ball.tintColor = 'blue'; // tank
         ball.fireRate = 200;
         ball.pointValue = 1000;
         ball.topHitOnly = true;
