@@ -104,3 +104,29 @@ var io = io || {};
     io.pressed = pressed;
 
 })();
+
+var io = io || {};
+(function () {
+    "use strict";
+
+    // adapted from
+    // http://www.html5canvastutorials.com/labs/html5-canvas-animals-on-the-beach-game-with-kineticjs/
+    function loadImages(rootUrl, sources, callback) {
+        var images = {};
+        var loadedImages = 0;
+        for(var index in sources) {
+            var src = sources[index];
+            var image = new Image();
+            images[src] = image;
+            image.onload = function() {
+                // trigger callback only if all required images have been loaded
+                if(++loadedImages >= sources.length) {
+                    callback(images);
+                }
+            };
+            image.src = rootUrl + '/' + src + '.png';
+        }
+    }
+
+    io.loadImages = loadImages;
+})();
