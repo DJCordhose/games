@@ -292,6 +292,10 @@ function shotInertiaMove(deltaT) {
                     removeObject(enemy);
                     logic.enemies.splice(index, 1);
                     logic.score += enemy.pointValue;
+                    if (enemy.powerPack) {
+                        logic.powerPacks.push(enemy.powerPack);
+                        alert(enemy.powerPack);
+                    }
                 }
         }, this);
     } else {
@@ -414,13 +418,18 @@ function drawOverview(gameName, description, currentScore) {
     if (!running && !gameOver) {
         context.fillText('Paused, hit ESC to resume', 100, 100);
     }
+    if (this.powerPacks.length > 0) {
+        context.font = '20px sans-serif';
+        var pps = this.powerPacks.join(", ")
+        context.fillText(pps, canvas.width - 200, canvas.height - 25);
+    }
 }
 
 var logic = {
     name: 'undefined',
     description: 'Game description not set',
     draw: function () {
-        drawOverview(this.name, this.description, this.score)
+        drawOverview.call(this, this.name, this.description, this.score)
     }
 };
 addObject(logic);

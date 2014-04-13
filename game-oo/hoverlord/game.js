@@ -202,7 +202,7 @@ var player = {
     control: control
 };
 player.position.x = canvas.width / 2,
-    player.position.y = canvas.height - 20
+player.position.y = canvas.height - 20
 
 addObject(player);
 
@@ -242,7 +242,7 @@ logic.spawnEnemy = function () {
         tintColor: 'black'
     };
     if (Math.random() < 0.1) {
-        ball.tintColor = 'red'; // spammer
+        ball.tintColor = 'red';
         ball.fireRate = 20;
         ball.pointValue = 500;
     } else if (Math.random() < 0.25) {
@@ -250,8 +250,16 @@ logic.spawnEnemy = function () {
         ball.fireRate = 150;
         ball.pointValue = 300;
         ball.shotSelection = aimedShot;
+        ball.powerPack = 'Shield (q)';
+    } else if (Math.random() > 0.9) {
+        ball.tintColor = 'blue';
+        ball.fireRate = 200;
+        ball.pointValue = 1000;
+        ball.topHitOnly = true;
+        ball.powerPack = 'Rocket (r)';
     }
-    addObject(ball);
+
+        addObject(ball);
     // don't immediately collide with player
     var playerWithExtendedRadius = {
         position: {
@@ -355,6 +363,8 @@ logic.update = function (deltaT) {
     if (gameOver) running = false;
 };
 
+logic.powerPacks = [];
+
 // adapted from
 // http://www.html5canvastutorials.com/labs/html5-canvas-animals-on-the-beach-game-with-kineticjs/
 function loadImages(rootUrl, sources, callback) {
@@ -403,6 +413,10 @@ function drawEnemy () {
 }
 
 var alienImage;
+// Credit for the art goes to
+// - Hyptosis@gmail.com (http://www.newgrounds.com/art/view/hyptosis/tile-art-batch-1)
+// - http://4vector.com/free-vector/free-vector-vector-clip-art-alien-spaceship-icon-98467
+// - http://www.flaticon.com/png/256/44079.png
 loadImages('images/', ['alien_spaceship', 'tank'], function (images) {
 
     alienImage = images['alien_spaceship'];
