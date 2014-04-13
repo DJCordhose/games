@@ -2,6 +2,7 @@ var game = game || {};
 (function (util, io) {
     "use strict";
     function GameObject(config) {
+        this.config = config;
     }
 
     function Ball(config) {
@@ -201,7 +202,7 @@ var game = game || {};
         objects.forEach(function (object) {
             if (object.update) {
 //                try {
-                    object.update(deltaT);
+                object.update(deltaT);
 //                } catch (e) {
 //                    console.error("Error while updating object " + JSON.stringify(object), e);
 //                }
@@ -211,7 +212,7 @@ var game = game || {};
         objects.forEach(function (object) {
             if (object.draw) {
 //                try {
-                    object.draw();
+                object.draw();
 //                } catch (e) {
 //                    console.error("Error while drawing object " + JSON.stringify(object), e);
 //                }
