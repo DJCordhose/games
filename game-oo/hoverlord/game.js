@@ -34,7 +34,7 @@ function gunControls(currentControl, deltaT) {
     if ('space' in currentControl) {
         if (!logic.spaceWasDown) {
           playPlayerShotSound();
-          spawnShot(player, true);
+          spawnShot(player, true, true);
           logic.spaceWasDown = true;
         }
     } else {
@@ -60,16 +60,20 @@ function playPlayerShotSound() {
     oscillator.stop(audioContext.currentTime + 0.7); // seconds */
 }
 
-function spawnShot(shooter, playerShot) {
+function spawnShot(shooter, playerShot, relativeSpeed) {
     var xSpeed = getAngularMovementX(shooter.gun.angle, shooter.gun.power);
     var ySpeed = getAngularMovementY(shooter.gun.angle, shooter.gun.power);
+    if (relativeSpeed) {
+        xSpeed += shooter.velocity.x;
+        ySpeed += shooter.velocity.y;
+    }
     var ball = {
         r: 5,
         playerShot: playerShot,
         color: playerShot ? 'black' : 'red',
         velocity: {
-            x: xSpeed + shooter.velocity.x,
-            y: ySpeed + shooter.velocity.y
+            x: xSpeed,
+            y: ySpeed
         },
         maxSpeed: 5000,
         position: {
@@ -124,12 +128,12 @@ function drawGunBarrel() {
 }
 
 function getAngularMovementX(angle, distance) {
-    var angleRadians = (180.0 + player.gun.angle) * Math.PI / 180.0;
+    var angleRadians = (180.0 + angle) * Math.PI / 180.0;
     return Math.cos(angleRadians) * distance;
 }
 
 function getAngularMovementY(angle, distance) {
-    var angleRadians = (180.0 + player.gun.angle) * Math.PI / 180.0;
+    var angleRadians = (180.0 + angle) * Math.PI / 180.0;
     return Math.sin(angleRadians) * distance;
 }
 
@@ -238,9 +242,14 @@ logic.spawnEnemy = function () {
         tintColor: 'black'
     };
     if (Math.random() < 0.1) {
-        ball.tintColor = 'red';
+        ball.tintColor = 'red'; // spammer
         ball.fireRate = 20;
         ball.pointValue = 500;
+    } else if (Math.random() < 0.1) {
+        ball.tintColor = 'green'; // sniper
+        ball.fireRate = 150;
+        ball.pointValue = 300;
+        ball.shotSelection = aimedShot;
     }
     addObject(ball);
     // don't immediately collide with player
@@ -262,11 +271,43 @@ logic.spawnEnemy = function () {
 function randomShot(deltaT) {
     this.gun.angle = Math.random() * 180.0;
     this.gun.power = Math.random() * 4.0 + 1.0;
+    spawnShot(this, false, true);
 }
 
 function aimedShot(deltaT) {
-    this.gun.power = 3.0;
-    this.gun.angle = Math.random() * 180.0;
+    var power = 3.0;
+    this.gun.power = power;
+    //this.gun.angle = Math.random() * 180.0;
+    var gravity = 0.035;
+    var targetX = player.position.x;
+    var rnd = Math.random();
+    if (rnd < 0.75) {
+        targetX += (Math.random() * 60.0) - 30.0;
+    }
+    var xDist = -(targetX - this.position.x);
+    var yDist = -(player.position.y - this.position.y);
+    var reverse = false;
+    if (xDist < 0.0) {
+        xDist = -xDist;
+        reverse = true;
+    }
+    var angle = power * power * power * power - gravity * (gravity * xDist * xDist + 2 * yDist * power * power);
+    if (angle < 0) {
+        angle = power * power * power * power + gravity * (gravity * xDist * xDist + 2 * yDist * power * power);
+    }
+    angle = power * power + Math.sqrt(angle);
+    angle /= gravity * xDist;
+    angle = Math.atan(angle) * 180.0 / Math.PI;
+    if (angle < 0.0 || angle > 180.0) {
+        angle = power * power - Math.sqrt(angle);
+        angle /= gravity * xDist;
+        angle = Math.atan(angle) * 180.0 / Math.PI;
+    }
+    if (reverse) {
+        angle = 180.0 - angle;
+    }
+    this.gun.angle = angle;
+    spawnShot(this, false, false);
 }
 
 function updateEnemy(deltaT) {
@@ -284,7 +325,6 @@ function updateEnemy(deltaT) {
     }
     if (now() >= this.nextShot) {
         this.shotSelection(deltaT);
-        spawnShot(this, false);
         this.nextShot  = now() + this.fireRate;
     }
 }
@@ -306,7 +346,7 @@ function getSpawnChance() {
     if (logic.enemies.length == 0) {
         return 1.0;
     } else {
-        return ((getMaxEnemies() - logic.enemies.length) / getMaxEnemies()) * 0.0175;
+        return ((getMaxEnemies() - logic.enemies.length) / getMaxEnemies()) * 0.0475;
     }
 }
 
