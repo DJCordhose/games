@@ -51,8 +51,10 @@ function playSoundBad(frequency) {
 ////////////////////////////
 
 var canvas = document.getElementById('game');
-canvas.width = window.innerWidth - 20;
-canvas.height = window.innerHeight - 20;
+//canvas.width = window.innerWidth - 20;
+//canvas.height = window.innerHeight - 20;
+canvas.width = 1024;
+canvas.height = 600;
 var context = canvas.getContext('2d');
 
 function drawBall() {
@@ -91,6 +93,7 @@ function loop() {
             object.draw();
         }
     });
+    drawHud();
 }
 
 var objects = [];
@@ -173,6 +176,11 @@ function keyboardControl(currentControl) {
     if (40 in pressed) currentControl['down'] = true;
     if (37 in pressed) currentControl['left'] = true;
     if (39 in pressed) currentControl['right'] = true;
+    if (87 in pressed) currentControl['w'] = true;
+    if (65 in pressed) currentControl['a'] = true;
+    if (83 in pressed) currentControl['s'] = true;
+    if (68 in pressed) currentControl['d'] = true;
+    if (32 in pressed) currentControl['space'] = true;
 }
 
 function control() {
@@ -218,7 +226,76 @@ function ballsCollide(ball1, ball2) {
     return Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2)) < c;
 }
 
-function inertiaMove(deltaT) {
+function shotInertiaMove(deltaT) {
+    var gravity = this.gravity || 0;
+    var friction = this.friction || 0;
+    var maxSpeed = this.maxSpeed || Number.MAX_VALUE;
+
+    // move position based on speed
+    this.position.x += this.velocity.x * deltaT;
+    this.position.y += this.velocity.y * deltaT;
+
+    // bounce on edges
+    /* if (this.position.x < this.r) {
+     this.position.x = this.r;
+     this.velocity.x = -this.velocity.x;
+     }
+     if (this.position.x >= canvas.width - this.r) {
+     this.position.x = canvas.width - this.r;
+     this.velocity.x = -this.velocity.x;
+     }
+     if (this.position.y < this.r) {
+     this.position.y = this.r;
+     this.velocity.y = -this.velocity.y;
+     }
+     if (this.position.y >= canvas.height - this.r) {
+     this.position.y = canvas.height - this.r;
+     this.velocity.y = -this.velocity.y;
+     } */
+    if (this.position.y >= canvas.height - this.r) {
+        removeObject(this);
+        return;
+    }
+    if (this.position.x <= -this.r) {
+        removeObject(this);
+        return;
+    }
+    if (this.position.x >= canvas.width + this.r) {
+        removeObject(this);
+        return;
+    }
+
+    if (this.playerShot) {
+        logic.enemies.forEach(function (enemy, index) {
+                if (ballsCollide(enemy, this)) {
+                    removeObject(enemy);
+                    logic.enemies.splice(index, 1);
+                    logic.score += enemy.pointValue;
+                }
+        }, this);
+    }
+
+    // gravity
+    this.velocity.y += gravity * deltaT;
+    // wind
+//    this.velocity.x += gravity * deltaT;
+
+    // limit speed
+    if (this.velocity.x > 0 && this.velocity.x > this.maxSpeed) {
+        this.velocity.x = this.maxSpeed;
+    }
+    if (this.velocity.x < 0 && -this.velocity.x > this.maxSpeed) {
+        this.velocity.x = -this.maxSpeed;
+    }
+    if (this.velocity.y > 0 && this.velocity.y > this.maxSpeed) {
+        this.velocity.y = this.maxSpeed;
+    }
+    if (this.velocity.y < 0 && -this.velocity.y > this.maxSpeed) {
+        this.velocity.y = -this.maxSpeed;
+    }
+}
+
+function playerInertiaMove(deltaT) {
     var gravity = this.gravity || 0;
     var friction = this.friction || 0;
     var maxSpeed = this.maxSpeed || Number.MAX_VALUE;
@@ -248,7 +325,7 @@ function inertiaMove(deltaT) {
     // apply friction
     //this.velocity.x = this.velocity.x + (this.velocity.x > 0 ? -1 : +1) * friction * deltaT;
     //this.velocity.y = this.velocity.y + (this.velocity.y > 0 ? -1 : +1) * friction * deltaT;
-    this.velocity.x *= 1.0 - this.friction;
+    this.velocity.x *= 1.0 - (this.friction * deltaT);
 
     // gravity
     //this.velocity.y += gravity * deltaT;
@@ -268,13 +345,6 @@ function inertiaMove(deltaT) {
     if (this.velocity.y < 0 && -this.velocity.y > this.maxSpeed) {
         this.velocity.y = -this.maxSpeed;
     }
-}
-
-function accelerate(currentControl, deltaT) {
-    //if ('up' in currentControl) this.velocity.y -= this.acceleration * deltaT;
-    //if ('down' in currentControl) this.velocity.y += this.acceleration * deltaT;
-    if ('left' in currentControl) this.velocity.x -= this.acceleration * deltaT;
-    if ('right' in currentControl) this.velocity.x += this.acceleration * deltaT;
 }
 
 function movesLeft() {
