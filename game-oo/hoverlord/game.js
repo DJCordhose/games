@@ -2,12 +2,25 @@ function updatePlayer(deltaT) {
     var currentControl = this.control();
     accelerate.call(this, currentControl, deltaT);
     gunControls.call(this, currentControl, deltaT);
+    powerpackControl.call(this, currentControl, deltaT);
     playerInertiaMove.call(this, deltaT);
 }
 
 function accelerate(currentControl, deltaT) {
     if ('a' in currentControl) this.velocity.x -= this.acceleration * deltaT;
     if ('d' in currentControl) this.velocity.x += this.acceleration * deltaT;
+}
+
+function powerpackControl(currentControl, deltaT) {
+    if ('r' in currentControl) {
+        if (!logic.rocket) {
+            playPlayerShotSound();
+            spawnShot(player, true, true);
+            logic.spaceWasDown = true;
+        }
+    } else {
+        logic.spaceWasDown = false;
+    }
 }
 
 function gunControls(currentControl, deltaT) {

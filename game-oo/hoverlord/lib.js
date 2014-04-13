@@ -294,7 +294,6 @@ function shotInertiaMove(deltaT) {
                     logic.score += enemy.pointValue;
                     if (enemy.powerPack) {
                         logic.powerPacks.push(enemy.powerPack);
-                        alert(enemy.powerPack);
                     }
                 }
         }, this);
@@ -420,7 +419,7 @@ function drawOverview(gameName, description, currentScore) {
     }
     if (this.powerPacks.length > 0) {
         context.font = '20px sans-serif';
-        var pps = this.powerPacks.join(", ")
+        var pps = this.powerPacks.join(", ");
         context.fillText(pps, canvas.width - 200, canvas.height - 25);
     }
 }
