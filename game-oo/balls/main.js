@@ -1,3 +1,5 @@
+io.fullsizeCanvas();
+
 var player = new balls.Player();
 var ballsGame = new balls.BallsGame(player);
 

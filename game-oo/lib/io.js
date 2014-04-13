@@ -55,18 +55,22 @@ var io = io || {};
     "use strict";
 
     var canvas = document.getElementById('game');
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
     var context = canvas.getContext('2d');
-    window.addEventListener("orientationchange", function () {
+
+    function fullsizeCanvas() {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
-        console.log("New orientation:" + window.orientation);
-        io.context = canvas.getContext('2d');
-    }, false);
+
+        window.addEventListener("orientationchange", function () {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            console.log("New orientation:" + window.orientation);
+        }, false);
+    }
 
     io.canvas = canvas;
     io.context = context;
+    io.fullsizeCanvas = fullsizeCanvas;
 })();
 
 var io = io || {};
