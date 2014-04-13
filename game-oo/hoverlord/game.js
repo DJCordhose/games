@@ -233,8 +233,12 @@ logic.spawnEnemy = function () {
             y: 0
         },
         fireRate: fireRate, // 100 = 1s
-        nextShot: now() + fireRate
+        nextShot: now() + fireRate,
+        tintColor: 'black'
     };
+    if (Math.random() < 0.5) {
+        ball.tintColor = 'red';
+    }
     addObject(ball);
     // don't immediately collide with player
     var playerWithExtendedRadius = {
@@ -323,13 +327,32 @@ function loadImages(rootUrl, sources, callback) {
     }
 }
 
+var enemyTintBuffers = {};
+
 function drawEnemy () {
     var dw = 30, dh = 30,
         dx = this.position.x - dw / 2, dy = this.position.y - dh / 2 + 5,
         sx = 0, sy = 0,
         sw = 200, sh = alienImage.height;
 
-    context.drawImage(alienImage, sx, sy, sw, sh, dx, dy, dw, dh);
+    if (this.tintColor == 'black') {
+        context.drawImage(alienImage, sx, sy, sw, sh, dx, dy, dw, dh);
+    } else {
+        if (! (this.tintColor in enemyTintBuffers)) {
+            var buffer = document.createElement('canvas');
+            buffer.width = dw;
+            buffer.height = dh;
+            var bx = buffer.getContext('2d');
+            bx.fillStyle = this.tintColor;
+            bx.fillRect(0, 0, buffer.width, buffer.height);
+            bx.globalCompositeOperation = "destination-atop";
+            bx.drawImage(alienImage, sx, sy, sw, sh, 0, 0, dw, dh);
+            enemyTintBuffers[this.tintColor] = buffer;
+        }
+        //context.globalAlpha = 0.7;
+        context.drawImage(enemyTintBuffers[this.tintColor], dx, dy);
+        //context.globalAlpha = 1.0;
+    }
 }
 
 var alienImage;
