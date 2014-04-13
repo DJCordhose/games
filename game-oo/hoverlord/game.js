@@ -211,7 +211,7 @@ logic.spaceWasDown = false;
 logic.maxGunPower = 7.5;
 
 logic.spawnEnemy = function () {
-    var r = 10;
+    var r = 15;
     var distFromBottom = 100;
     var distFromTop = 150;
     var fireRate = 100.0;
@@ -225,7 +225,7 @@ logic.spawnEnemy = function () {
             angle: 90.0, // 0 = left, 90 = up, 180 = right
             power: 5.0
         },
-        draw: drawBall,
+        draw: drawEnemy,
         update: updateEnemy,
         moveSpeed: (Math.random() * 2.0 + 0.5) * (Math.random() < 0.5 ? 1.0 : -1.0),
         fireRate: fireRate, // 100 = 1s
@@ -314,8 +314,20 @@ function loadImages(rootUrl, sources, callback) {
         image.src = rootUrl + '/' + src + '.png';
     }
 }
-loadImages('images/', ['alien_spaceship','tank'], function (images) {
 
+function drawEnemy () {
+    var dw = 30, dh = 30,
+        dx = this.position.x - dw / 2, dy = this.position.y - dh / 2 + 5,
+        sx = 0, sy = 0,
+        sw = 200, sh = alienImage.height;
+
+    context.drawImage(alienImage, sx, sy, sw, sh, dx, dy, dw, dh);
+}
+
+var alienImage;
+loadImages('images/', ['alien_spaceship', 'tank'], function (images) {
+
+    alienImage = images['alien_spaceship'];
     player.draw = function () {
         var image = images['tank'];
 
@@ -326,7 +338,7 @@ loadImages('images/', ['alien_spaceship','tank'], function (images) {
 
         context.drawImage(image, sx, sy, sw, sh, dx, dy, dw, dh);
 
-            drawGunBarrel();
+        drawGunBarrel();
     };
 
     loop();
