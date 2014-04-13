@@ -251,6 +251,8 @@ function inertiaMove(deltaT) {
 
     // gravity
     this.velocity.y += gravity * deltaT;
+    // wind
+//    this.velocity.x += gravity * deltaT;
 
     // limit speed
     if (this.velocity.x > 0 && this.velocity.x > this.maxSpeed) {
