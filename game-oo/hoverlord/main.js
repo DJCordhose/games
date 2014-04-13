@@ -1,6 +1,6 @@
 io.fullsizeCanvas();
 
-io.loadImages('images/', ['hyptosis_tile-art-batch-1'], function (images) {
+io.loadImages('images/', ['hyptosis_tile-art-batch-1', 'ufo','alien_spaceship','tank'], function (images) {
 
     // Credit for the art goes to Hyptosis@gmail.com (http://www.newgrounds.com/art/view/hyptosis/tile-art-batch-1)
 //    var green = new game.Sprite({

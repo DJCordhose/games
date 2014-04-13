@@ -36,13 +36,26 @@ var game = game || {};
     function Sprite(config) {
         GameObject.call(config);
         this.image = config.image;
-        this.imageInfo = config.imageInfo;
+        this.imageInfo = config.imageInfo || {};
+        if (typeof this.imageInfo.sx === 'undefined') {
+            this.imageInfo.sx = 0;
+        }
+        if (typeof this.imageInfo.sy === 'undefined') {
+            this.imageInfo.sy = 0;
+        }
+        if (typeof this.imageInfo.sw === 'undefined') {
+            this.imageInfo.sw = this.image.width;
+        }
+        if (typeof this.imageInfo.sh === 'undefined') {
+            this.imageInfo.sh = this.image.height;
+        }
         if (typeof this.imageInfo.dw === 'undefined') {
             this.imageInfo.dw = this.imageInfo.sw;
         }
         if (typeof this.imageInfo.dh === 'undefined') {
             this.imageInfo.dh = this.imageInfo.sh;
         }
+
         if (config.position) {
             this.position = config.position;
         }
