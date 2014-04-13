@@ -118,14 +118,29 @@ function loose() {
 ////////////////////////////
 
 var pressed = {};
+var escWasPressed = false;
 window.onkeydown = function (e) {
-    if (e.keyCode === 27 && !gameOver) {
-        running = !running;
-        if (running) {
+    if (!escWasPressed) {
+        escWasPressed = true;
+        if (e.keyCode === 27 && !gameOver) {
+            running = !running;
+            if (running) {
+                previousNow = now()
+                loop();
+            }
+            return;
+        } else if (e.keyCode === 27 && gameOver) {
+            objects.length = 0;
+            logic.enemies.length = 0;
+            logic.score = 0;
+            addObject(player);
+            addObject(logic);
+            running = true;
+            gameOver = false;
             previousNow = now()
             loop();
+            return;
         }
-        return;
     }
     if (e.keyCode === 40 || e.keyCode === 38 || e.keyCode === 37 || e.keyCode === 39 || e.keyCode === 32) {
         e.preventDefault();
@@ -135,6 +150,9 @@ window.onkeydown = function (e) {
 
 window.onkeyup = function (e) {
     delete pressed[e.keyCode];
+    if (e.keyCode === 27) {
+        escWasPressed = false;
+    }
 };
 
 window.addEventListener("orientationchange", function () {
@@ -273,6 +291,10 @@ function shotInertiaMove(deltaT) {
                     logic.score += enemy.pointValue;
                 }
         }, this);
+    } else {
+        if (ballsCollide(player, this)) {
+            loose();
+        }
     }
 
     // gravity

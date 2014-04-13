@@ -66,7 +66,7 @@ function spawnShot(shooter, playerShot) {
     var ball = {
         r: 5,
         playerShot: playerShot,
-        color: playerShot ? 'green' : 'yellow',
+        color: playerShot ? 'black' : 'red',
         velocity: {
             x: xSpeed,
             y: ySpeed
@@ -135,8 +135,6 @@ function drawHud() {
     context.lineWidth = 15;
     context.moveTo(baseX, baseY);
     context.lineTo(pointX, pointY);
-    //context.arc(canvas.width - 50, 50, 15, 0, Math.PI * 2);
-    //context.fill();
     context.stroke();
     context.closePath();
     var rectX = canvas.width - 160;
@@ -200,25 +198,28 @@ logic.maxEnemies = 10;
 logic.spaceWasDown = false;
 logic.maxGunPower = 7.5;
 
-logic.createBall = function () {
+logic.spawnEnemy = function () {
     var r = 10;
     var distFromBottom = 100;
     var distFromTop = 150;
+    var fireRate = 100.0;
     var ball = {
         r: r,
         position: {
             x: Math.round(Math.random() * (canvas.width - distFromBottom - distFromTop) + r + distFromTop),
             y: Math.round(Math.random() * (canvas.height - distFromBottom - distFromTop) + r + distFromTop)
         },
+        gun: {
+            angle: 90.0, // 0 = left, 90 = up, 180 = right
+            power: 5.0
+        },
         draw: drawBall,
-        moveSpeed: (Math.random() * 2.0 + 0.5) * (Math.random() < 0.5 ? 1.0 : -1.0)
+        update: updateEnemy,
+        moveSpeed: (Math.random() * 2.0 + 0.5) * (Math.random() < 0.5 ? 1.0 : -1.0),
+        fireRate: fireRate, // 100 = 1s
+        nextShot: now() + fireRate
     };
     addObject(ball);
-    return ball;
-};
-
-logic.spawnEnemy = function () {
-    var ball = this.createBall();
     // don't immediately collide with player
     var playerWithExtendedRadius = {
         position: {
@@ -233,22 +234,29 @@ logic.spawnEnemy = function () {
         logic.enemies.push(ball);
         ball.pointValue = 100;
         ball.color = 'red';
-        ball.update = function (deltaT) {
-            if (ballsCollide(ball, player)) {
-                loose();
-            }
-            this.position.x += this.moveSpeed * deltaT;
-            if (this.position.x < this.r) {
-                this.position.x += (this.r - this.position.x) * 2;
-                this.moveSpeed = -this.moveSpeed;
-            }
-            if (this.position.x > (canvas.width - this.r)) {
-                this.position.x -= (this.position.x - (canvas.width - this.r)) * 2;
-                this.moveSpeed = -this.moveSpeed;
-            }
-        };
     }
 };
+
+function updateEnemy(deltaT) {
+    /* if (ballsCollide(this, player)) {
+        loose();
+    } */
+    this.position.x += this.moveSpeed * deltaT;
+    if (this.position.x < this.r) {
+        this.position.x += (this.r - this.position.x) * 2;
+        this.moveSpeed = -this.moveSpeed;
+    }
+    if (this.position.x > (canvas.width - this.r)) {
+        this.position.x -= (this.position.x - (canvas.width - this.r)) * 2;
+        this.moveSpeed = -this.moveSpeed;
+    }
+    if (now() >= this.nextShot) {
+        this.gun.angle = Math.random() * 180.0;
+        this.gun.power = Math.random() * 4.0 + 0.5;
+        spawnShot(this, false);
+        this.nextShot  = now() + this.fireRate;
+    }
+}
 
 logic.update = function (deltaT) {
     if (this.enemies.length == 0 || Math.random() < this.enemySpawnChance * deltaT && this.enemies.length < this.maxEnemies) this.spawnEnemy();
