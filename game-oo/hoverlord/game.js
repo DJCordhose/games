@@ -236,8 +236,9 @@ logic.spawnEnemy = function () {
         nextShot: now() + fireRate,
         tintColor: 'black'
     };
-    if (Math.random() < 0.5) {
+    if (Math.random() < 0.1) {
         ball.tintColor = 'red';
+        ball.fireRate = 20;
     }
     addObject(ball);
     // don't immediately collide with player
