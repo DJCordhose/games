@@ -51,8 +51,8 @@ function playSoundBad(frequency) {
 ////////////////////////////
 
 var canvas = document.getElementById('game');
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
+canvas.width = window.innerWidth - 20;
+canvas.height = window.innerHeight - 20;
 var context = canvas.getContext('2d');
 
 function drawBall() {
