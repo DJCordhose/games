@@ -124,12 +124,12 @@ function drawGunBarrel() {
 }
 
 function getAngularMovementX(angle, distance) {
-    var angleRadians = (180.0 + player.gun.angle) * Math.PI / 180.0;
+    var angleRadians = (180.0 + angle) * Math.PI / 180.0;
     return Math.cos(angleRadians) * distance;
 }
 
 function getAngularMovementY(angle, distance) {
-    var angleRadians = (180.0 + player.gun.angle) * Math.PI / 180.0;
+    var angleRadians = (180.0 + angle) * Math.PI / 180.0;
     return Math.sin(angleRadians) * distance;
 }
 
@@ -246,6 +246,12 @@ logic.spawnEnemy = function () {
         ball.fireRate = 200;
         ball.pointValue = 1000;
         ball.topHitOnly = true;
+    } else if (Math.random() > 0.8 && Math.random() < 0.85 ) {
+        ball.tintColor = 'yellow';
+        ball.fireRate = 10;
+        ball.pointValue = 1000;
+        ball.update = updateEnemyMoveToBorder;
+        ball.shotSelection = straightShot;
     }
     addObject(ball);
     // don't immediately collide with player
@@ -269,6 +275,11 @@ function randomShot(deltaT) {
     this.gun.power = Math.random() * 4.0 + 1.0;
 }
 
+function straightShot(deltaT) {
+    this.gun.angle = 90.0;
+    this.gun.power = Math.random() * 4.0 + 1.0;
+}
+
 function aimedShot(deltaT) {
     this.gun.power = 3.0;
     this.gun.angle = Math.random() * 180.0;
@@ -288,6 +299,20 @@ function updateEnemy(deltaT) {
         this.velocity.x = -this.velocity.x;
     }
     if (now() >= this.nextShot) {
+        this.shotSelection(deltaT);
+        spawnShot(this, false);
+        this.nextShot  = now() + this.fireRate;
+    }
+}
+function updateEnemyMoveToBorder(deltaT) {
+    this.position.x += this.velocity.x * deltaT;
+    if (this.position.x < this.r) {
+        this.velocity.x = 0;
+    }
+    if (this.position.x > (canvas.width - this.r)) {
+        this.velocity.x = 0;
+    }
+    if (this.velocity.x === 0 && now() >= this.nextShot) {
         this.shotSelection(deltaT);
         spawnShot(this, false);
         this.nextShot  = now() + this.fireRate;
