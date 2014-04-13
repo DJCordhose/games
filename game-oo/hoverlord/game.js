@@ -13,16 +13,22 @@ function accelerate(currentControl, deltaT) {
 
 function powerpackControl(currentControl, deltaT) {
     if ('r' in currentControl) {
-        if (!logic.rocket) {
-            playPlayerShotSound();
-            spawnShot(player, true, true);
-            logic.spaceWasDown = true;
+        if (logic.powerPacks.indexOf('Rocket (r)') !== -1) {
+            logic.powerPacks.splice(logic.powerPacks.indexOf('Rocket (r)'), 1);
+            if (!logic.rocketWasDown) {
+                spawnRockt(player);
+                logic.rocketWasDown = true;
+            }
+
         }
     } else {
-        logic.spaceWasDown = false;
+        logic.rocketWasDown = false;
     }
 }
 
+function spawnRockt(player) {
+
+}
 function gunControls(currentControl, deltaT) {
     //if ('up' in currentControl) this.velocity.y -= this.acceleration * deltaT;
     //if ('down' in currentControl) this.velocity.y += this.acceleration * deltaT;
@@ -376,7 +382,7 @@ logic.update = function (deltaT) {
     if (gameOver) running = false;
 };
 
-logic.powerPacks = [];
+logic.powerPacks = ['Rocket (r)'];
 
 // adapted from
 // http://www.html5canvastutorials.com/labs/html5-canvas-animals-on-the-beach-game-with-kineticjs/
