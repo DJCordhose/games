@@ -302,7 +302,7 @@ logic.spawnEnemy = function () {
         ball.fireRate = 150;
         ball.pointValue = 300;
         ball.shotSelection = aimedShot;
-        ball.powerPack = 'Shield (q)';
+//        ball.powerPack = 'Shield (q)';
     } else if (Math.random() > 0.9) {
         ball.tintColor = 'blue'; // tank
         ball.fireRate = 200;
