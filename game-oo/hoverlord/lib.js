@@ -286,6 +286,9 @@ function shotInertiaMove(deltaT) {
     if (this.playerShot) {
         logic.enemies.forEach(function (enemy, index) {
                 if (ballsCollide(enemy, this)) {
+                    if (enemy.topHitOnly && this.velocity.y < 0) {
+                        return;
+                    }
                     removeObject(enemy);
                     logic.enemies.splice(index, 1);
                     logic.score += enemy.pointValue;

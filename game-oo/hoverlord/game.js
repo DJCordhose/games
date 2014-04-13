@@ -241,6 +241,11 @@ logic.spawnEnemy = function () {
         ball.tintColor = 'red';
         ball.fireRate = 20;
         ball.pointValue = 500;
+    } else if (Math.random() > 0.9) {
+        ball.tintColor = 'blue';
+        ball.fireRate = 200;
+        ball.pointValue = 1000;
+        ball.topHitOnly = true;
     }
     addObject(ball);
     // don't immediately collide with player
@@ -363,6 +368,10 @@ function drawEnemy () {
 }
 
 var alienImage;
+// Credit for the art goes to
+// - Hyptosis@gmail.com (http://www.newgrounds.com/art/view/hyptosis/tile-art-batch-1)
+// - http://4vector.com/free-vector/free-vector-vector-clip-art-alien-spaceship-icon-98467
+// - http://www.flaticon.com/png/256/44079.png
 loadImages('images/', ['alien_spaceship', 'tank'], function (images) {
 
     alienImage = images['alien_spaceship'];
