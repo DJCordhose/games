@@ -199,6 +199,8 @@ function keyboardControl(currentControl) {
     if (83 in pressed) currentControl['s'] = true;
     if (68 in pressed) currentControl['d'] = true;
     if (32 in pressed) currentControl['space'] = true;
+    if (82 in pressed) currentControl['r'] = true;
+    if (81 in pressed) currentControl['q'] = true;
 }
 
 function control() {

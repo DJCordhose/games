@@ -16,19 +16,51 @@ function powerpackControl(currentControl, deltaT) {
         if (logic.powerPacks.indexOf('Rocket (r)') !== -1) {
             logic.powerPacks.splice(logic.powerPacks.indexOf('Rocket (r)'), 1);
             if (!logic.rocketWasDown) {
-                spawnRockt(player);
+                spawnRocket(player);
                 logic.rocketWasDown = true;
             }
-
         }
     } else {
         logic.rocketWasDown = false;
     }
 }
 
-function spawnRockt(player) {
+function spawnRocket(shooter) {
+    var xSpeed = getAngularMovementX(shooter.gun.angle, 10);
+    var ySpeed = getAngularMovementY(shooter.gun.angle, 10);
 
+    var r = 100;
+    var ball = {
+        r: r,
+        playerShot: true,
+        color: 'red',
+        velocity: {
+            x: xSpeed,
+            y: ySpeed
+        },
+        position: {
+            x: shooter.position.x,
+            y: shooter.position.y - r
+        },
+        acceleration: 1,
+        gravity: 0,
+        friction: 0,
+        draw: drawRocket,
+        update: updateShot
+    };
+    addObject(ball);
+    return ball;
 }
+
+function drawRocket() {
+    context.fillStyle = this.color;
+    context.beginPath();
+    context.arc(this.position.x, this.position.y, this.r, 0, Math.PI * 2);
+    context.fill();
+    context.closePath();
+}
+
+
 function gunControls(currentControl, deltaT) {
     //if ('up' in currentControl) this.velocity.y -= this.acceleration * deltaT;
     //if ('down' in currentControl) this.velocity.y += this.acceleration * deltaT;
