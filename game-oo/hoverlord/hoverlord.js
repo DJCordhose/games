@@ -1,121 +1,48 @@
-var snake = snake || {};
-(function (_extends, Player, Ball, context) {
+var hoverlord = hoverlord || {};
+(function (exports, _extends, _mixin, BallsPlayer, Sprite) {
     "use strict";
 
-    function Snake() {
-        Snake._super.constructor.call(this);
-        this.color = '#A08020';
+    function Player(images) {
+        Player._super.constructor.call(this);
         this.velocity.x = 1;
         this.gravity = 0;
         this.acceleration = 0.05;
         this.friction = 0.0001;
-        this.past = [];
-        this.tailLength = 50;
         this.maxSpeed = 2;
-    }
-
-    _extends(Snake, Player);
-
-    Snake.prototype._drawTail = function () {
-        this.past.forEach(function (tailBall) {
-            tailBall.draw();
-        });
-    };
-
-    Snake.prototype._checkTailCollision = function () {
-        this.past.forEach(function (tailBall, index) {
-            // skip the first few tail balls in order not to collide with directly adjacent ones
-            if (index > this.past.length - this.r * 5) return;
-            if (this.collidesWith(tailBall)) {
-                this.game.loose();
-            }
-        }, this);
-    };
-
-    Snake.prototype.addToPast = function () {
-        var tailBall = new Ball({
-            color: this.color,
-            r: this.r,
+        this.rCollide = 15;
+        // Credit for the art goes to Hyptosis@gmail.com (http://www.newgrounds.com/art/view/hyptosis/tile-art-batch-1)
+        Sprite.call(this, {
+            image: images['hyptosis_tile-art-batch-1'],
             position: {
-                x: this.position.x,
-                y: this.position.y
+                x: 100,
+                y: 100
+            },
+            // https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D#drawImage()
+            imageInfo: {
+                sx: 290, sy: 258, sw: 28, sh: 26
             }
         });
-        this.past.push(tailBall);
-        // let the tail grow with each ball caught
-        if (this.past.length > this.tailLength + this.game.currentScore) {
-            this.past.splice(0, 1);
-        }
-    };
-
-    Snake.prototype.draw = function () {
-        Snake._super.draw.call(this);
-//        this._drawTail();
-//        this._drawFace();
-        // https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D#drawImage()
-
-
-        var dx = this.position.x, dy = this.position.y, dw = 30, dh = 30, sx = 288, sy = 258, sw = 30, sh = 26;
-        context.drawImage(snake.images['hyptosis_tile-art-batch-1'], sx, sy, sw, sh, dx, dy, dw, dh);
-    };
-
-    Snake.prototype._drawFace = function () {
-        context.fillStyle = '#101010';
-        context.beginPath();
-        context.arc(this.position.x + this.r / 2, this.position.y, 2, 0, Math.PI * 2);
-        context.fill();
-        context.closePath();
-        context.beginPath();
-        context.arc(this.position.x - this.r / 2, this.position.y, 2, 0, Math.PI * 2);
-        context.fill();
-        context.closePath();
     }
 
+    _extends(Player, BallsPlayer);
+    _mixin(Player, Sprite);
 
-    Snake.prototype.update = function (deltaT) {
-        Snake._super.update.call(this, deltaT);
-//        this._checkTailCollision();
-//        this.addToPast();
-    };
+    exports.Player = Player;
 
-    Snake.prototype.control = function () {
-        var originalControl = Snake._super.control.call(this);
-        var relativeControl = {};
+})(hoverlord, util._extends, util._mixin, balls.Player, game.Sprite);
 
-        if (this.movesLeft()) {
-            if ('left' in originalControl) relativeControl['down'] = true;
-            if ('right' in originalControl) relativeControl['up'] = true;
-        } else if (this.movesRight()) {
-            if ('left' in originalControl) relativeControl['up'] = true;
-            if ('right' in originalControl) relativeControl['down'] = true;
-        } else if (this.movesUp()) {
-            if ('left' in originalControl) relativeControl['left'] = true;
-            if ('right' in originalControl) relativeControl['right'] = true;
-        } else if (this.movesDown()) {
-            if ('left' in originalControl) relativeControl['right'] = true;
-            if ('right' in originalControl) relativeControl['left'] = true;
-        }
-
-        return relativeControl;
-    };
-
-    snake.Snake = Snake;
-
-})(util._extends, balls.Player, game.Ball, io.context);
-
-var snake = snake || {};
-(function (_extends, BallsGame) {
+(function (exports, _extends, BallsGame) {
     "use strict";
 
-    function SnakeGame(snakePlayer) {
-        SnakeGame._super.constructor.call(this, snakePlayer);
+    function HoverlordGame(snakePlayer) {
+        HoverlordGame._super.constructor.call(this, snakePlayer);
         this.gameName = "Snake";
         this.description = 'Snake! Hit green balls and avoid red ones and your own tail. Control snake relative to current direction by using left and right cursor keys.'
         this.greenBallLikeliness = 0.01;
         this.redBallLikeliness = 0.001;
     }
 
-    _extends(SnakeGame, BallsGame);
+    _extends(HoverlordGame, BallsGame);
 
-    snake.SnakeGame = SnakeGame;
-})(util._extends, balls.BallsGame);
+    exports.HoverlordGame = HoverlordGame;
+})(hoverlord, util._extends, balls.BallsGame);

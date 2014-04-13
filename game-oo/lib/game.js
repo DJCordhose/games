@@ -27,8 +27,38 @@ var game = game || {};
         // a^2 + b^2 = c^2
         var a = otherBall.position.x - this.position.x;
         var b = otherBall.position.y - this.position.y;
-        var c = this.r + otherBall.r;
+        var r1 = this.rCollide || this.r;
+        var r2 = otherBall.rCollide || otherBall.r;
+        var c = r1 + r2;
         return Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2)) < c;
+    };
+
+    function Sprite(config) {
+        GameObject.call(config);
+        this.image = config.image;
+        this.imageInfo = config.imageInfo;
+        if (typeof this.imageInfo.dw === 'undefined') {
+            this.imageInfo.dw = this.imageInfo.sw;
+        }
+        if (typeof this.imageInfo.dh === 'undefined') {
+            this.imageInfo.dh = this.imageInfo.sh;
+        }
+        if (config.position) {
+            this.position = config.position;
+        }
+    }
+
+    util._extends(Sprite, GameObject);
+
+    Sprite.prototype.draw = function () {
+        // https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D#drawImage()
+        var dw = this.imageInfo.dw, dh = this.imageInfo.dh,
+            // calculate center coordinate, as image takes upper left coordinate
+            dx = this.position.x - this.imageInfo.dw / 2, dy = this.position.y - this.imageInfo.dh / 2,
+            sx = this.imageInfo.sx, sy = this.imageInfo.sy,
+            sw = this.imageInfo.sw, sh = this.imageInfo.sh;
+
+            io.context.drawImage(this.image, sx, sy, sw, sh, dx, dy, dw, dh);
     };
 
     function MovingObject(config) {
@@ -128,6 +158,7 @@ var game = game || {};
 
     game.GameObject = GameObject;
     game.Ball = Ball;
+    game.Sprite = Sprite;
     game.MovingObject = MovingObject;
 })(util, io);
 
