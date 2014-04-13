@@ -234,11 +234,13 @@ logic.spawnEnemy = function () {
         },
         fireRate: fireRate, // 100 = 1s
         nextShot: now() + fireRate,
+        pointValue: 100,
         tintColor: 'black'
     };
     if (Math.random() < 0.1) {
         ball.tintColor = 'red';
         ball.fireRate = 20;
+        ball.pointValue = 500;
     }
     addObject(ball);
     // don't immediately collide with player
@@ -253,7 +255,6 @@ logic.spawnEnemy = function () {
         removeObject(ball);
     } else {
         logic.enemies.push(ball);
-        ball.pointValue = 100;
         ball.color = 'red';
     }
 };
@@ -261,6 +262,11 @@ logic.spawnEnemy = function () {
 function randomShot(deltaT) {
     this.gun.angle = Math.random() * 180.0;
     this.gun.power = Math.random() * 4.0 + 1.0;
+}
+
+function aimedShot(deltaT) {
+    this.gun.power = 3.0;
+    this.gun.angle = Math.random() * 180.0;
 }
 
 function updateEnemy(deltaT) {
