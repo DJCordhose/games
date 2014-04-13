@@ -59,11 +59,11 @@ var game = game || {};
         if (this.position.x < this.r) {
             this.position.x = this.r;
             this.velocity.x = -this.velocity.x;
-        }
-        if (this.position.x >= io.canvas.width - this.r) {
-            this.position.x = io.canvas.width - this.r;
-            this.velocity.x = -this.velocity.x;
-        }
+			if (this.position.x >= io.canvas.width - this.r) {
+				this.position.x = io.canvas.width - this.r;
+				this.velocity.x = -this.velocity.x;
+			}
+		}
         if (this.position.y < this.r) {
             this.position.y = this.r;
             this.velocity.y = -this.velocity.y;
