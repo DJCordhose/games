@@ -68,8 +68,8 @@ function spawnShot(shooter, playerShot) {
         playerShot: playerShot,
         color: playerShot ? 'black' : 'red',
         velocity: {
-            x: xSpeed,
-            y: ySpeed
+            x: xSpeed + shooter.velocity.x,
+            y: ySpeed + shooter.velocity.y
         },
         maxSpeed: 5000,
         position: {
@@ -89,7 +89,7 @@ function spawnShot(shooter, playerShot) {
 function drawShot() {
     context.fillStyle = this.color;
     context.beginPath();
-    context.lineWidth = 2;
+    context.lineWidth = 1.2;
     context.arc(this.position.x, this.position.y, this.r, 0, Math.PI * 2);
     if (!this.playerShot) {
         context.fill();
@@ -227,7 +227,11 @@ logic.spawnEnemy = function () {
         },
         draw: drawBall,
         update: updateEnemy,
-        moveSpeed: (Math.random() * 2.0 + 0.5) * (Math.random() < 0.5 ? 1.0 : -1.0),
+        shotSelection: randomShot,
+        velocity : {
+            x: (Math.random() * 2.0 + 0.5) * (Math.random() < 0.5 ? 1.0 : -1.0),
+            y: 0
+        },
         fireRate: fireRate, // 100 = 1s
         nextShot: now() + fireRate
     };
@@ -249,22 +253,26 @@ logic.spawnEnemy = function () {
     }
 };
 
+function randomShot(deltaT) {
+    this.gun.angle = Math.random() * 180.0;
+    this.gun.power = Math.random() * 4.0 + 1.0;
+}
+
 function updateEnemy(deltaT) {
     /* if (ballsCollide(this, player)) {
         loose();
     } */
-    this.position.x += this.moveSpeed * deltaT;
+    this.position.x += this.velocity.x * deltaT;
     if (this.position.x < this.r) {
         this.position.x += (this.r - this.position.x) * 2;
-        this.moveSpeed = -this.moveSpeed;
+        this.velocity.x = -this.velocity.x;
     }
     if (this.position.x > (canvas.width - this.r)) {
         this.position.x -= (this.position.x - (canvas.width - this.r)) * 2;
-        this.moveSpeed = -this.moveSpeed;
+        this.velocity.x = -this.velocity.x;
     }
     if (now() >= this.nextShot) {
-        this.gun.angle = Math.random() * 180.0;
-        this.gun.power = Math.random() * 4.0 + 0.5;
+        this.shotSelection(deltaT);
         spawnShot(this, false);
         this.nextShot  = now() + this.fireRate;
     }
