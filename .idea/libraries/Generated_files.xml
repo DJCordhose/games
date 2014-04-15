@@ -1,0 +1,25 @@
+<component name="libraryTable">
+  <library name="Generated files" type="javaScript">
+    <properties>
+      <sourceFilesUrls>
+        <item url="file://$PROJECT_DIR$/game-ts/bricks/main.js" />
+        <item url="file://$PROJECT_DIR$/game-ts/lib/io.js" />
+        <item url="file://$PROJECT_DIR$/game-ts/bricks/bricks.js" />
+        <item url="file://$PROJECT_DIR$/game-ts/balls/main.js" />
+        <item url="file://$PROJECT_DIR$/game-ts/balls/balls.js" />
+        <item url="file://$PROJECT_DIR$/game-ts/lib/game.js" />
+      </sourceFilesUrls>
+    </properties>
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/game-ts/lib/util.js" />
+      <root url="file://$PROJECT_DIR$/game-ts/lib/util.js" />
+      <root url="file://$PROJECT_DIR$/game-ts/bricks/main.js" />
+      <root url="file://$PROJECT_DIR$/game-ts/balls/main.js" />
+      <root url="file://$PROJECT_DIR$/game-ts/bricks/bricks.js" />
+      <root url="file://$PROJECT_DIR$/game-ts/lib/io.js" />
+      <root url="file://$PROJECT_DIR$/game-ts/balls/balls.js" />
+      <root url="file://$PROJECT_DIR$/game-ts/lib/game.js" />
+    </CLASSES>
+    <SOURCES />
+  </library>
+</component>
