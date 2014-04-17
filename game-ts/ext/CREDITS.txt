@@ -1,0 +1,1 @@
+waa.d.ts: https://github.com/borisyankov/DefinitelyTyped
