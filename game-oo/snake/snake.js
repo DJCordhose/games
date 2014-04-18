@@ -11,8 +11,21 @@ var snake = snake || {};
         this.friction = 0.0001;
         this.past = [];
         this.tailLength = 50;
+        this.tailGrowthPerBall = 1;
         this.maxSpeed = 2;
     }
+//    function Snake() {
+//        Snake._super.constructor.call(this);
+//        this.color = '#A08020';
+//        this.velocity.x = 2;
+//        this.gravity = 0.01;
+//        this.acceleration = 0.1;
+//        this.friction = 0.001;
+//        this.past = [];
+//        this.tailLength = 100;
+//        this.tailGrowthPerBall = 100;
+//        this.maxSpeed = 3;
+//    }
 
     _extends(Snake, Player);
 
@@ -43,7 +56,7 @@ var snake = snake || {};
         });
         this.past.push(tailBall);
         // let the tail grow with each ball caught
-        if (this.past.length > this.tailLength + this.game.currentScore) {
+        if (this.past.length > this.tailLength + this.game.currentScore * this.tailGrowthPerBall) {
             this.past.splice(0, 1);
         }
     };

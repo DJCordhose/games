@@ -6,7 +6,7 @@ var game = game || {};
     }
 
     function Ball(config) {
-        GameObject.call(config);
+        GameObject.call(this, config);
         this.position = config.position;
         this.r = config.r;
         this.color = config.color;

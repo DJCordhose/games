@@ -79,6 +79,8 @@ var io = io || {};
     var pressed = {};
     var orientationSupported = false;
     var orientationEvent;
+    var onReadyCallbacks = [];
+
 
     window.onkeydown = function (e) {
         if (e.keyCode === 40 || e.keyCode === 38 || e.keyCode === 37 || e.keyCode === 39 || e.keyCode === 32) {
@@ -100,8 +102,19 @@ var io = io || {};
         return currentControl;
     }
 
+    function ready(callback) {
+        onReadyCallbacks.push(callback);
+    }
+
+    window.onload = function() {
+        onReadyCallbacks.forEach(function (callback) {
+            callback();
+        })
+    }
+
     io.control = control;
     io.pressed = pressed;
+    io.ready = ready;
 
 })();
 
