@@ -126,27 +126,6 @@
                 <h2>Introduction to simple game programming using the canvas and OO-based JavaScript</h2>
             </section>
         <section>
-            <h3>Basic idea: Reactive programming using a game loop</h3>
-<pre><code class="javascript" contenteditable>function loop() {
-    if (running) requestAnimationFrame(loop);
-    var nextNow = now();
-    var deltaT = nextNow - previousNow;
-    previousNow = nextNow;
-    objects.forEach(function (object) {
-        if (object.update) {
-            object.update(deltaT);
-        }
-    });
-    context.clearRect(0, 0, canvas.width, canvas.height);
-    objects.forEach(function (object) {
-        if (object.draw) {
-            object.draw();
-        }
-    });
-}
-</code></pre>
-        </section>
-        <section>
             <h3>Rendering on the canvas</h3>
 <pre><code class="javascript" contenteditable>var canvas = document.getElementById('game');
 var context = canvas.getContext('2d');
@@ -158,6 +137,27 @@ function draw() {
     context.arc(this.position.x, this.position.y, this.r, 0, Math.PI * 2);
     context.fill();
     context.closePath();
+}
+</code></pre>
+        </section>
+        <section>
+            <h3>Basic idea: Reactive programming using a game loop</h3>
+<pre><code class="javascript" contenteditable>function loop() {
+    if (running) requestAnimationFrame(loop);
+    var now = now();
+    var deltaT = now - previousNow;
+    previousNow = now;
+    objects.forEach(function (object) {
+        if (object.update) {
+            object.update(deltaT);
+        }
+    });
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    objects.forEach(function (object) {
+        if (object.draw) {
+            object.draw();
+        }
+    });
 }
 </code></pre>
         </section>
@@ -294,47 +294,56 @@ Ball.prototype.update = update;
                     <li class="fragment">Complex game physics (perfect calculation of shots by sniper)
                     <li class="fragment">Power packs
                     <li class="fragment">Not completely merged into OO framework, yet
+                    <li class="fragment">Credit goes to <a target="_blank" href="https://twitter.com/snipefish">Markus Rating</a>
+
                 </ul>
             </section>
         </section>
 
+        <section>
             <section>
-            <h2>Engines</h2>
-            <ul>
-                <li class="fragment"><a target="_blank"
-                                        href="http://html5gameengine.com/">http://html5gameengine.com/</a>
-                <li class="fragment"><a target="_blank" href="http://kineticjs.com/">http://kineticjs.com/</a>
-                <li class="fragment"><a target="_blank" href="http://phaser.io/">http://phaser.io/</a>: 2d engine with
-                    TypeScript support
-            </ul>
-        </section>
-        <section>
-            <h2>Sound</h2>
-            <ul>
-                <li class="fragment"><a target="_blank"
-                                        href="http://blog.jetienne.com/blog/2014/02/18/webaudiox-a-dry-library-for-webaudio-api/">http://blog.jetienne.com/blog/2014/02/18/webaudiox-a-dry-library-for-webaudio-api/</a>
-                <li class="fragment"><a target="_blank" href="https://github.com/meenie/band.js">https://github.com/meenie/band.js</a>
-            </ul>
-        </section>
-        <section>
-            <h2>Physics</h2>
-            <ul>
-                <li class="fragment"><a target="_blank"
-                                        href="http://www.adambrookesprojects.co.uk/project/canvas-collision-elastic-collision-tutorial/">http://www.adambrookesprojects.co.uk/project/canvas-collision-elastic-collision-tutorial/</a>
-                <li class="fragment"><a target="_blank" href="http://gafferongames.com/game-physics/">http://gafferongames.com/game-physics/</a>
-            </ul>
+                <h2>Resources</h2>
+            </section>
+            <section>
+                <h2>Engines</h2>
+                <ul>
+                    <li class="fragment"><a target="_blank"
+                                            href="http://html5gameengine.com/">http://html5gameengine.com/</a>
+                    <li class="fragment"><a target="_blank" href="http://kineticjs.com/">http://kineticjs.com/</a>
+                    <li class="fragment"><a target="_blank" href="http://phaser.io/">http://phaser.io/</a>: 2d engine
+                        with
+                        TypeScript support
+                </ul>
+            </section>
+            <section>
+                <h2>Sound</h2>
+                <ul>
+                    <li class="fragment"><a target="_blank"
+                                            href="http://blog.jetienne.com/blog/2014/02/18/webaudiox-a-dry-library-for-webaudio-api/">http://blog.jetienne.com/blog/2014/02/18/webaudiox-a-dry-library-for-webaudio-api/</a>
+                    <li class="fragment"><a target="_blank" href="https://github.com/meenie/band.js">https://github.com/meenie/band.js</a>
+                </ul>
+            </section>
+            <section>
+                <h2>Physics</h2>
+                <ul>
+                    <li class="fragment"><a target="_blank"
+                                            href="http://www.adambrookesprojects.co.uk/project/canvas-collision-elastic-collision-tutorial/">http://www.adambrookesprojects.co.uk/project/canvas-collision-elastic-collision-tutorial/</a>
+                    <li class="fragment"><a target="_blank" href="http://gafferongames.com/game-physics/">http://gafferongames.com/game-physics/</a>
+                </ul>
 
-        </section>
-        <section>
-            <h2>WebRTC for Data</h2>
-            <ul>
-                <li class="fragment"><a target="_blank" href="http://webaudiodemos.appspot.com/fluent/#46">http://webaudiodemos.appspot.com/fluent/#46</a>
-                <li class="fragment"><a target="_blank" href="http://www.simpl.info/rtcdatachannel/">http://www.simpl.info/rtcdatachannel/</a>
-                <li class="fragment"><a target="_blank"
-                                        href="http://www.html5rocks.com/en/tutorials/webrtc/basics/#toc-rtcdatachannel">http://www.html5rocks.com/en/tutorials/webrtc/basics/#toc-rtcdatachannel</a>
-            </ul>
-        </section>
+            </section>
             <section>
+                <h2>WebRTC for Data</h2>
+                <ul>
+                    <li class="fragment"><a target="_blank" href="http://webaudiodemos.appspot.com/fluent/#46">http://webaudiodemos.appspot.com/fluent/#46</a>
+                    <li class="fragment"><a target="_blank" href="http://www.simpl.info/rtcdatachannel/">http://www.simpl.info/rtcdatachannel/</a>
+                    <li class="fragment"><a target="_blank"
+                                            href="http://www.html5rocks.com/en/tutorials/webrtc/basics/#toc-rtcdatachannel">http://www.html5rocks.com/en/tutorials/webrtc/basics/#toc-rtcdatachannel</a>
+                </ul>
+            </section>
+        </section>
+
+        <section>
                 <h1>Thank you</h1>
 
                 <h3>Questions / Feedback / Discussion</h3>
