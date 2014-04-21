@@ -2,7 +2,7 @@
  * Typescript-based variant of Olli Zeigermann's Game Engine
  * Nils Hartmann (nils@nilshartmann.net)
  */
-/// <reference path="../ext/waa.d.ts" />
+/// <reference path="../../game-ts/ext/waa.d.ts" />
 
     module eighties.lib.io {
 
