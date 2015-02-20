@@ -103,18 +103,22 @@ var game = game || {};
         if (this.position.x < this.r) {
             this.position.x = this.r;
             this.velocity.x = -this.velocity.x;
+            throwEvent("bounce");
         }
         if (this.position.x >= io.canvas.width - this.r) {
             this.position.x = io.canvas.width - this.r;
             this.velocity.x = -this.velocity.x;
+            throwEvent("bounce");
         }
         if (this.position.y < this.r) {
             this.position.y = this.r;
             this.velocity.y = -this.velocity.y;
+            throwEvent("bounce");
         }
         if (this.position.y >= io.canvas.height - this.r) {
             this.position.y = io.canvas.height - this.r;
             this.velocity.y = -this.velocity.y;
+            throwEvent("bounce");
         }
     };
 
@@ -169,17 +173,6 @@ var game = game || {};
         return this.velocity.y > 0 && Math.abs(this.velocity.x) <= Math.abs(this.velocity.y);
     };
 
-    game.GameObject = GameObject;
-    game.Ball = Ball;
-    game.Sprite = Sprite;
-    game.MovingObject = MovingObject;
-})(util, io);
-
-
-var game = game || {};
-(function (util, io) {
-    "use strict";
-
     function SimpleLogic(config) {
         this.gameName = config.gameName;
         this.description = config.description;
@@ -188,7 +181,7 @@ var game = game || {};
         this.running = false;
     }
 
-    util._extends(SimpleLogic, game.GameObject);
+    util._extends(SimpleLogic, GameObject);
 
     SimpleLogic.prototype.draw = function () {
         var highScoreKey = this.gameName + '-highscore';
@@ -266,6 +259,14 @@ var game = game || {};
 
     var objects = [];
 
+    function throwEvent(type, event) {
+        objects.forEach(function (object) {
+            if (object.on) {
+                object.on(type, event);
+            }
+        });
+    }
+
     SimpleLogic.prototype.addObject = function (object) {
         // push new balls to front so game logic will draw tests in front of them
         objects.splice(0, 0, object);
@@ -288,6 +289,11 @@ var game = game || {};
         this.running = true;
         previousNow = now();
     };
+
+    game.GameObject = GameObject;
+    game.Ball = Ball;
+    game.Sprite = Sprite;
+    game.MovingObject = MovingObject;
 
     game.SimpleLogic = SimpleLogic;
 

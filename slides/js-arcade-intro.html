@@ -1,0 +1,394 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+
+    <title>Introduction to 80s Arcade Games</title>
+
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+
+    <link rel="stylesheet" href="../reveal.js/css/reveal.min.css">
+    <link rel="stylesheet" href="../reveal.js/css/theme/simple.css" id="theme">
+    <!--<link rel="stylesheet" href="../reveal.js/css/theme/sky.css" id="theme">-->
+    <!--<link rel="stylesheet" href="../reveal.js/css/theme/moon.css" id="theme">-->
+
+    <!-- For syntax highlighting -->
+    <!--<link rel="stylesheet" href="../reveal.js/lib/css/zenburn.css">-->
+
+    <!-- If the query includes 'print-pdf', use the PDF print sheet -->
+    <script>
+        document.write('<link rel="stylesheet" href="../reveal.js/css/print/' + ( window.location.search.match(/print-pdf/gi) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">');
+    </script>
+
+    <!--[if lt IE 9]>
+    <script src="../reveal.js/lib/js/html5shiv.js"></script>
+    <![endif]-->
+</head>
+
+<body>
+<div class="reveal">
+
+    <!-- Any section element inside of this container is displayed as a slide -->
+    <div class="slides">
+        <section>
+            <h1>Introduction to 80s Arcade Games</h1>
+            <br>
+            <h2>Using JavaScript and the canvas</h2>
+            <p>
+                <small><a href="http://zeigermann.eu">Oliver Zeigermann</a> / <a href="http://twitter.com/djcordhose">@DJCordhose</a>
+                </small>
+                <br>
+            </p>
+        </section>
+        <section>
+            <h2>What do you mean by 80s Arcade Game?</h2>
+            <ul>
+                <li class="fragment">In the 80s there were no good graphics
+                <li class="fragment">There was no great sound
+                <li class="fragment">The game idea was all there was
+            </ul>
+        </section>
+
+        <section>
+            <h2>What used to take me weeks in the 80s, we now can do in a single day</h2>
+            <ul>
+                <li class="fragment">Modern browsers support all you need
+                <li class="fragment">JavaScript is great for fast development
+                <li class="fragment">All your games are playable in the browser
+            </ul>
+        </section>
+        <section>
+            <section>
+                <h2>Introduction to simple game programming using the canvas and JavaScript</h2>
+            </section>
+        <section>
+            <h3>Rendering on the canvas</h3>
+<pre><code class="javascript" contenteditable>var canvas = document.getElementById('game');
+var context = canvas.getContext('2d');
+
+// draw a ball
+function draw() {
+    context.fillStyle = this.color;
+    context.beginPath();
+    context.arc(this.position.x, this.position.y, this.r, 0, Math.PI * 2);
+    context.fill();
+    context.closePath();
+}
+</code></pre>
+        </section>
+        <section>
+            <h3>Basic idea: Reactive programming using a game loop</h3>
+<pre><code class="javascript" contenteditable>function loop() {
+    if (running) requestAnimationFrame(loop);
+    var now = now();
+    var deltaT = now - previousNow;
+    previousNow = now;
+    objects.forEach(function (object) {
+        if (object.update) {
+            object.update(deltaT);
+        }
+    });
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    objects.forEach(function (object) {
+        if (object.draw) {
+            object.draw();
+        }
+    });
+}
+</code></pre>
+        </section>
+        <section>
+            <h3>Sound using Web Audio</h3>
+<pre><code class="javascript" contenteditable>// highly simplified
+var context = new AudioContext();
+
+function createOscillator() {
+    // Oscillator defaults to sine wave
+    var oscillator = context.createOscillator();
+    oscillator.type = oscillator.SQUARE;
+    oscillator.frequency.value = 440;
+
+    // Connect the source to the output.
+    oscillator.connect(context.destination);
+    return oscillator;
+}
+</code></pre>
+        </section>
+        <section>
+            <h3>Basic physics simulation is a no brainer</h3>
+<pre class="fragment"><code class="javascript" contenteditable>function update(deltaT) {
+    control();
+
+    // change position based on speed
+    this.position.x += this.velocity.x * deltaT;
+    this.position.y += this.velocity.y * deltaT;
+
+    // gravity
+    this.velocity.y += this.gravity * deltaT;
+}
+</code></pre>
+<pre class="fragment"><code class="javascript" contenteditable>function ballsCollide(ball1, ball2) {
+    // a^2 + b^2 = c^2
+    var a = ball2.position.x - ball1.position.x;
+    var b = ball2.position.y - ball1.position.y;
+    var c = ball1.r + ball2.r;
+    return Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2)) < c;
+}
+</code></pre>
+        </section>
+        <section>
+            <h3>Control</h3>
+<pre><code class="javascript" contenteditable>var pressed = {};
+
+window.onkeydown = function (e) {
+    pressed[e.keyCode] = true;
+};
+window.onkeyup = function (e) {
+    delete pressed[e.keyCode];
+};
+
+function control() {
+    if (38 in pressed) this.velocity.y -= this.acceleration * deltaT; // up
+    if (40 in pressed) this.velocity.y += this.acceleration * deltaT; // down
+    if (37 in pressed) this.velocity.x -= this.acceleration * deltaT; // left
+    if (39 in pressed) this.velocity.x += this.acceleration * deltaT; // right
+}
+</code></pre>
+        </section>
+        <section>
+            <h3>A simple game object</h3>
+<pre><code class="javascript" contenteditable>var ball = {
+    r: 10,
+    color: 'blue',
+    velocity: {
+        x: 0,
+        y: 0
+    },
+    position: {
+        x: 100,
+        y: 100
+    },
+    draw: draw,
+    update: update
+};</code></pre>
+        </section>
+        <section>
+            <h3>A class based game object</h3>
+<pre><code class="javascript" contenteditable>function GameObject(config) {
+    this.config = config;
+}
+
+function Ball(config) {
+    GameObject.call(this, config);
+    this.position = config.position;
+    this.r = config.r;
+    this.color = config.color;
+}
+
+Ball.prototype = Object.create(GameObject.prototype);
+
+Ball.prototype.draw = draw;
+Ball.prototype.update = update;
+</code></pre>
+        </section>
+            <section>
+                <h3>Sprites</h3>
+                <p><a target="_blank" href="https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D.drawImage"><em>context.drawImage</em></a>
+                        can draw an <a target="_blank" href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLImageElement"><em>HTMLImageElement</em></a></p>
+
+<pre><code class="javascript" contenteditable>var image = new Image(); // HTML5 syntax
+image.src = 'images/basketball_ball.png';
+image.onload = function() {
+    player.draw = function () {
+        context.drawImage(image, this.position.x, this.position.y);
+    };
+};</code></pre>
+            </section>
+
+        </section>
+
+        <section>
+            <section>
+                <h2>Examples</h2>
+            </section>
+            <section>
+                <h3>Raw game frame</h3>
+                <ul>
+                    <li class="fragment"><a target="_blank" href="../game-oo/raw/raw.html">Demo</a>
+                    <li class="fragment">Just a bouncing ball, no real game
+                    <li class="fragment">Basic OO concepts
+                    <li class="fragment">Basic keyboard control
+                    <li class="fragment">Experiment with basic physics parameters
+                </ul>
+            </section>
+            <section>
+                <h3>Balls</h3>
+                <ul>
+                    <li class="fragment"><a target="_blank" href="../game-oo/balls/balls.html">Demo</a>
+                    <li class="fragment">First real game
+                    <li class="fragment">Uses collision detection
+                    <li class="fragment">Ball taken over from previous example without changes
+                    <li class="fragment">Now has game logic
+                    <li class="fragment">Turn on Sound!!!!!
+                    <li class="fragment">Experiment with game balancing (green / red ball rates)
+                </ul>
+            </section>
+            <section>
+                <h3>Snake</h3>
+                <ul>
+                    <li class="fragment"><a target="_blank" href="../game-oo/snake/snake.html">Demo</a>
+                    <li class="fragment">Relative keyboard control
+                    <li class="fragment">Snake grows and gets faster
+                    <li class="fragment">Drawing based on balls representing snakes past
+                    <li class="fragment">Experiment with game balancing (gravity, velocity, acceleration, tail length)
+                </ul>
+            </section>
+            <section>
+                <h3>Wurfram</h3>
+                <ul>
+                    <li class="fragment"><a target="_blank" href="http://djcordhose.github.io/plestecin.js/src/examples/wurfram/">Demo</a>
+                    <li class="fragment">Based on game framework <a target="_blank" href="https://github.com/DJCordhose/plestecin.js">Plestecin.js</a>
+                    <li class="fragment">Written in TypeScript
+                    <li class="fragment">Multiple game states (start, game, end)
+                    <li class="fragment">PNG based sprites
+                </ul>
+            </section>
+            <section>
+                <h3>Hoverlord</h3>
+                <ul>
+                    <li class="fragment"><a target="_blank" href="../game-oo/hoverlord/index.html">Demo</a>
+                    <li class="fragment">Most complex game
+                    <li class="fragment">Uses sprites
+                    <li class="fragment">Approximate collision detection (player is smaller than displayed, aliens larger)
+                    <li class="fragment">Complex game physics (perfect calculation of shots by sniper)
+                    <li class="fragment">Power packs
+                    <li class="fragment">Credit goes to <a target="_blank" href="https://twitter.com/snipefish">Markus Rating</a>
+                </ul>
+            </section>
+
+        </section>
+        <section>
+            <section>
+                <h2>Resources</h2>
+            </section>
+            <section>
+                <h2>Engines</h2>
+                <ul>
+                    <li class="fragment"><a target="_blank"
+                                            href="http://html5gameengine.com/">http://html5gameengine.com/</a>
+                    <li class="fragment"><a target="_blank" href="http://kineticjs.com/">http://kineticjs.com/</a>
+                    <li class="fragment"><a target="_blank" href="http://phaser.io/">http://phaser.io/</a>: 2d engine
+                        with optional
+                        TypeScript support
+                    <li class="fragment"><a target="_blank" href="https://github.com/DJCordhose/plestecin.js/tree/gh-pages">https://github.com/DJCordhose/plestecin.js/tree/gh-pages</a>: My TypeScript based game engine for educational purposes
+                </ul>
+            </section>
+            <section>
+                <h2>Sound</h2>
+                <ul>
+                    <li class="fragment"><a target="_blank"
+                                            href="http://blog.jetienne.com/blog/2014/02/18/webaudiox-a-dry-library-for-webaudio-api/">http://blog.jetienne.com/blog/2014/02/18/webaudiox-a-dry-library-for-webaudio-api/</a>
+                    <li class="fragment"><a target="_blank" href="https://github.com/meenie/band.js">https://github.com/meenie/band.js</a>
+                </ul>
+            </section>
+            <section>
+                <h2>Physics</h2>
+                <ul>
+                    <li class="fragment"><a target="_blank" href="http://box2d.org/">Box2D</a> A 2D Physics Engine for Games
+                        <ul>
+                            <li class="fragment"><a target="_blank"
+                                                    href="http://rednuht.org/genetic_cars_2/">http://rednuht.org/genetic_cars_2/</a> great example using a genetic algorithm
+                        </ul>
+                    </li>
+                    <li class="fragment"><a target="_blank"
+                                            href="http://www.adambrookesprojects.co.uk/project/canvas-collision-elastic-collision-tutorial/">http://www.adambrookesprojects.co.uk/project/canvas-collision-elastic-collision-tutorial/</a>
+                    <li class="fragment"><a target="_blank" href="http://gafferongames.com/game-physics/">http://gafferongames.com/game-physics/</a>
+                    <li class="fragment">Sprite/Sprite collision: <a target="_blank" href="http://devmag.org.za/2009/04/13/basic-collision-detection-in-2d-part-1/">http://devmag.org.za/2009/04/13/basic-collision-detection-in-2d-part-1/</a>
+                    <li class="fragment">Sprite/Wall collision: <a target="_blank" href="http://devmag.org.za/2009/04/17/basic-collision-detection-in-2d-part-2/">http://devmag.org.za/2009/04/17/basic-collision-detection-in-2d-part-2/</a>
+                </ul>
+
+            </section>
+            <section>
+                <h2>WebRTC for Data</h2>
+                <ul>
+                    <li class="fragment"><a target="_blank" href="http://webaudiodemos.appspot.com/fluent/#46">http://webaudiodemos.appspot.com/fluent/#46</a>
+                    <li class="fragment"><a target="_blank" href="http://www.simpl.info/rtcdatachannel/">http://www.simpl.info/rtcdatachannel/</a>
+                    <li class="fragment"><a target="_blank"
+                                            href="http://www.html5rocks.com/en/tutorials/webrtc/basics/#toc-rtcdatachannel">http://www.html5rocks.com/en/tutorials/webrtc/basics/#toc-rtcdatachannel</a>
+                </ul>
+            </section>
+            <section>
+                <h2>Books</h2>
+                <ul>
+                    <li class="fragment">Free book on patterns in Game Programing<a target="_blank"
+                                                                                    href="http://gameprogrammingpatterns.com/">http://gameprogrammingpatterns.com/</a>
+                    <li class="fragment">HTML5 in Action (having a dedicated game chapter): <a target="_blank" href="http://www.manning.com/crowther2/">http://www.manning.com/crowther2//</a>
+                    <li class="fragment">HTML5 Game Development Insights: <a target="_blank"
+                                            href="http://www.apress.com/9781430266976">http://www.apress.com/9781430266976</a>
+                </ul>
+            </section>
+
+        </section>
+
+        <section>
+                <h1>Thank you</h1>
+
+                <h3>Questions / Feedback / Discussion</h3>
+
+                <p>
+                    <small><a href="http://zeigermann.eu">Oliver Zeigermann</a> / <a
+                            href="http://twitter.com/djcordhose">@DJCordhose</a>
+                    </small>
+                    <br>
+                </p>
+            </section>
+    </div>
+
+</div>
+
+<script src="../reveal.js/lib/js/head.min.js"></script>
+<script src="../reveal.js/js/reveal.min.js"></script>
+<a target="_blank" href="https://github.com/DJCordhose/games"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/e7bbb0521b397edbd5fe43e7f760759336b5e05f/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png"></a>
+
+<script>
+
+    // Full list of configuration options available here:
+    // https://github.com/hakimel/../reveal.js#configuration
+    Reveal.initialize({
+        controls: true,
+        progress: true,
+        history: true,
+        center: true,
+
+        theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+        transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/none
+
+        // Optional libraries used to extend on ../reveal.js
+        dependencies: [
+            { src: '../reveal.js/lib/js/classList.js', condition: function () {
+                return !document.body.classList;
+            } },
+            { src: '../reveal.js/plugin/markdown/showdown.js', condition: function () {
+                return !!document.querySelector('[data-markdown]');
+            } },
+            { src: '../reveal.js/plugin/markdown/markdown.js', condition: function () {
+                return !!document.querySelector('[data-markdown]');
+            } },
+            { src: '../reveal.js/plugin/highlight/highlight.js', async: true, callback: function () {
+                hljs.initHighlightingOnLoad();
+            } },
+            { src: '../reveal.js/plugin/zoom-js/zoom.js', async: true, condition: function () {
+                return !!document.body.classList;
+            } },
+            { src: '../reveal.js/plugin/notes/notes.js', async: true, condition: function () {
+                return !!document.body.classList;
+            } }
+            // { src: 'plugin/remotes/remotes.js', async: true, condition: function() { return !!document.body.classList; } }
+        ]
+    });
+
+</script>
+
+</body>
+</html>

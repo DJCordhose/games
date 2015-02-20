@@ -2,19 +2,19 @@ var io = io || {};
 (function () {
     "use strict";
 
-    var audioContext;
+    var context;
     window.addEventListener('load', init, false);
     function init() {
         try {
             window.AudioContext = window.AudioContext || window.webkitAudioContext;
-            audioContext = new AudioContext();
+            context = new AudioContext();
         }
         catch (e) {
             console.warn('Web Audio API is not supported in this browser');
         }
     }
 
-    function createOscillator(context, frequency) {
+    function createOscillator(frequency, gain) {
         var oscillator = context.createOscillator(); // Oscillator defaults to sine wave
         oscillator.type = oscillator.SQUARE;
         oscillator.frequency.value = frequency; // in hertz
@@ -26,28 +26,38 @@ var io = io || {};
         // Connect the gain node to the destination.
         gainNode.connect(context.destination);
         // Reduce the volume.
-        gainNode.gain.value = 0.1;
+        gainNode.gain.value = gain || 0.1;
 
         return oscillator;
     }
 
     function playSoundGood(frequency) {
         frequency = frequency || 440;
-        var oscillator = createOscillator(audioContext, frequency);
-        oscillator.start(audioContext.currentTime); // play now
-        oscillator.stop(audioContext.currentTime + 0.2); // seconds
+        var oscillator = createOscillator(frequency);
+        oscillator.start(context.currentTime); // play now
+        oscillator.stop(context.currentTime + 0.2); // seconds
+    }
+
+    function playSound(frequency, duration, type, gain) {
+        var oscillator = createOscillator(frequency, gain);
+        if (typeof type != 'undefined') {
+            oscillator.type = type;
+        }
+        oscillator.start(context.currentTime); // play now
+        oscillator.stop(context.currentTime + duration); // seconds
     }
 
     function playSoundBad(frequency) {
         frequency = frequency || 55;
-        var oscillator = createOscillator(audioContext, frequency);
+        var oscillator = createOscillator(frequency);
         oscillator.type = oscillator.SAWTOOTH;
-        oscillator.start(audioContext.currentTime); // play now
-        oscillator.stop(audioContext.currentTime + 0.5); // seconds
+        oscillator.start(context.currentTime); // play now
+        oscillator.stop(context.currentTime + 0.5); // seconds
     }
 
     io.playSoundGood = playSoundGood;
     io.playSoundBad = playSoundBad;
+    io.playSound = playSound;
 })();
 
 var io = io || {};
