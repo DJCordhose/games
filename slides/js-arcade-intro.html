@@ -114,11 +114,12 @@ function draw() {
         </section>
         <section>
             <h3>Basic idea: Reactive programming using a game loop</h3>
-<pre><code class="javascript" contenteditable>function loop() {
+<pre><code class="javascript" contenteditable>var previousNow = now();
+function loop() {
     if (running) requestAnimationFrame(loop);
-    var now = now();
-    var deltaT = now - previousNow;
-    previousNow = now;
+    var nextNow = now();
+    var deltaT = nextNow - previousNow;
+    previousNow = nextNow;
     objects.forEach(function (object) {
         if (object.update) {
             object.update(deltaT);
@@ -130,23 +131,6 @@ function draw() {
             object.draw();
         }
     });
-}
-</code></pre>
-        </section>
-        <section>
-            <h3>Sound using Web Audio</h3>
-<pre><code class="javascript" contenteditable>// highly simplified
-var context = new AudioContext();
-
-function createOscillator() {
-    // Oscillator defaults to sine wave
-    var oscillator = context.createOscillator();
-    oscillator.type = oscillator.SQUARE;
-    oscillator.frequency.value = 440;
-
-    // Connect the source to the output.
-    oscillator.connect(context.destination);
-    return oscillator;
 }
 </code></pre>
         </section>
@@ -167,8 +151,8 @@ function createOscillator() {
     // a^2 + b^2 = c^2
     var a = ball2.position.x - ball1.position.x;
     var b = ball2.position.y - ball1.position.y;
-    var c = ball1.r + ball2.r;
-    return Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2)) < c;
+    var c = Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2));
+    return c < ball1.r + ball2.rc;
 }
 </code></pre>
         </section>
@@ -183,11 +167,28 @@ window.onkeyup = function (e) {
     delete pressed[e.keyCode];
 };
 
-function control() {
+function control(deltaT) {
     if (38 in pressed) this.velocity.y -= this.acceleration * deltaT; // up
     if (40 in pressed) this.velocity.y += this.acceleration * deltaT; // down
     if (37 in pressed) this.velocity.x -= this.acceleration * deltaT; // left
     if (39 in pressed) this.velocity.x += this.acceleration * deltaT; // right
+}
+</code></pre>
+        </section>
+        <section>
+            <h3>Sound using Web Audio</h3>
+<pre><code class="javascript" contenteditable>// highly simplified
+var context = new AudioContext();
+
+function createOscillator() {
+    // Oscillator defaults to sine wave
+    var oscillator = context.createOscillator();
+    oscillator.type = oscillator.SQUARE;
+    oscillator.frequency.value = 440;
+
+    // Connect the source to the output.
+    oscillator.connect(context.destination);
+    return oscillator;
 }
 </code></pre>
         </section>
