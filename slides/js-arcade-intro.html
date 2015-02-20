@@ -33,12 +33,13 @@
     <div class="slides">
         <section>
             <h1>Introduction to 80s Arcade Games</h1>
-            <br>
-            <h2>Using JavaScript and the canvas</h2>
+            <h3>Using JavaScript and the canvas</h3>
             <p>
                 <small><a href="http://zeigermann.eu">Oliver Zeigermann</a> / <a href="http://twitter.com/djcordhose">@DJCordhose</a>
                 </small>
                 <br>
+            </p>
+            <p>Online version at: <a href="http://djcordhose.github.io/games/slides/js-arcade-intro.html">http://djcordhose.github.io/games/slides/js-arcade-intro.html</a>
             </p>
         </section>
         <section>
@@ -76,6 +77,40 @@ function draw() {
     context.closePath();
 }
 </code></pre>
+        </section>
+        <section>
+            <h3>Tiny bits of HTML</h3>
+<pre><code class="html" contenteditable>&lt;!doctype html>
+&lt;html>
+&lt;head>
+    &lt;title>Simple Game&lt;/title>
+    &lt;style>
+        body { margin: 0px;}
+    &lt;/style>
+&lt;/head>
+&lt;body>
+&lt;canvas id="game">&lt;/canvas>
+&lt;script src="game.js">&lt;/script>
+&lt;/body>
+&lt;/html></code></pre>
+        </section>
+
+        <section>
+            <h3>A simple game object</h3>
+<pre><code class="javascript" contenteditable>var ball = {
+    r: 10,
+    color: 'blue',
+    velocity: {
+        x: 0,
+        y: 0
+    },
+    position: {
+        x: 100,
+        y: 100
+    },
+    draw: draw,
+    update: update
+};</code></pre>
         </section>
         <section>
             <h3>Basic idea: Reactive programming using a game loop</h3>
@@ -155,23 +190,6 @@ function control() {
     if (39 in pressed) this.velocity.x += this.acceleration * deltaT; // right
 }
 </code></pre>
-        </section>
-        <section>
-            <h3>A simple game object</h3>
-<pre><code class="javascript" contenteditable>var ball = {
-    r: 10,
-    color: 'blue',
-    velocity: {
-        x: 0,
-        y: 0
-    },
-    position: {
-        x: 100,
-        y: 100
-    },
-    draw: draw,
-    update: update
-};</code></pre>
         </section>
         <section>
             <h3>A class based game object</h3>
